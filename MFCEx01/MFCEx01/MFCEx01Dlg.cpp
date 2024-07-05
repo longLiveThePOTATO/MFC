@@ -105,6 +105,8 @@ BOOL CMFCEx01Dlg::OnInitDialog()
 	count_R = 0;
 	count_C = 0;
 
+	m_Pic.GetClientRect(&view);
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -130,17 +132,14 @@ void CMFCEx01Dlg::OnPaint()
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
-		// CPaintDC dc(&m_PictureControl); // 그리기를 위한 디바이스 컨텍스트입니다.
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		int x = (view.Width() - cxIcon + 1) / 2;
+		int y = (view.Height() - cyIcon + 1) / 2;
 
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
@@ -149,27 +148,25 @@ void CMFCEx01Dlg::OnPaint()
 	{
 		CDialogEx::OnPaint();
 		// IDC_VIEW (m_Pic) 컨트롤의 중앙에 수직선과 수평선 그리기
-		CRect rect;
-		m_Pic.GetClientRect(&rect);
 
-		int centerX = rect.left + rect.Width() / 2;
-		int centerY = rect.top + rect.Height() / 2;
+		int centerX = view.left + view.Width() / 2;
+		int centerY = view.top + view.Height() / 2;
 
 		CPaintDC dc(&m_Pic);
 		// 흰색 사각형 그리기
 		CBrush whiteBrush(WHITE); // 흰색 브러시 생성
 		dc.SelectObject(&whiteBrush); // 흰색 브러시 선택
 
-		CRect whiteRect(rect.left, rect.top, rect.right, rect.bottom); // 중심을 기준으로 사각형 크기 설정
+		CRect whiteRect(view.left, view.top, view.right, view.bottom); // 중심을 기준으로 사각형 크기 설정
 		dc.Rectangle(whiteRect); // 사각형 그리기
 
 		// 수직선 그리기
-		dc.MoveTo(centerX, rect.top);
-		dc.LineTo(centerX, rect.bottom);
+		dc.MoveTo(centerX, view.top);
+		dc.LineTo(centerX, view.bottom);
 
 		// 수평선 그리기
-		dc.MoveTo(rect.left, centerY);
-		dc.LineTo(rect.right, centerY);
+		dc.MoveTo(view.left, centerY);
+		dc.LineTo(view.right, centerY);
 
 		
 	}
@@ -193,32 +190,46 @@ void CMFCEx01Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CDialogEx::OnLButtonUp(nFlags, point);
+	CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
+	CDC* pDC = pStatic->GetDC();
+	pStatic->GetClientRect(&view);
+	CRgn rgn;
+	rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
+
 
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	CClientDC dc(this);
-	CPen my_pen(PS_SOLID, 2, LIGHTBLUE);
-	dc.SelectObject(&my_pen);
-	SelectObject(dc, GetStockObject(NULL_BRUSH));
 	UpdateData();
+	// 펜 설정
+	CPen my_pen(PS_SOLID, 2, LIGHTBLUE);
+	CPen* pOldPen = pDC->SelectObject(&my_pen);
+
+	// 브러시 설정
+	CBrush* pOldBrush = (CBrush*)pDC->SelectObject(GetStockObject(NULL_BRUSH));
 
 	CString obj_Str;
-	switch (obj_Type)
-	{
-	case 1:
-		dc.Rectangle(start_pos.x, start_pos.y, point.x, point.y);
-		count_R++;  // 사각형 개수 증가
-		obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
-		break;
-	case 2:
-		dc.Ellipse(start_pos.x, start_pos.y, point.x, point.y);
-		count_C++;  // 원 개수 증가
-		obj_Str.Format(_T("Circle %d"), count_C);  // 원 이름 설정
-		break;
-	default:
-		break;
+	pDC->SelectClipRgn(&rgn);
+	if (view.PtInRect(point) && view.PtInRect(start_pos)) {
+		switch (obj_Type)
+		{
+		case 1:
+			pDC->Rectangle(start_pos.x, start_pos.y, point.x, point.y);
+			count_R++;  // 사각형 개수 증가
+			obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
+			m_List.InsertString(-1, obj_Str);	// 리스트에 객체 추가
+			break;
+		case 2:
+			pDC->Ellipse(start_pos.x, start_pos.y, point.x, point.y);
+			count_C++;  // 원 개수 증가
+			obj_Str.Format(_T("Circle %d"), count_C);  // 원 이름 설정
+			m_List.InsertString(-1, obj_Str);	// 리스트에 객체 추가
+			break;
+		default:
+			break;
+		}
+		pDC->SelectClipRgn(NULL); // 영역 설정 해제 
+		pStatic->ReleaseDC(pDC);
 	}
 
-	m_List.InsertString(-1, obj_Str);
 }
 
 void CMFCEx01Dlg::OnBtnClickedAddR()

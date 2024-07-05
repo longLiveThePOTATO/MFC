@@ -43,6 +43,7 @@ public:
 	CListBox m_List;
 	CBrush m_Brush;
 	CStatic m_Pic;
+	CRect view;
 
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
