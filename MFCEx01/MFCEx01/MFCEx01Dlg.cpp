@@ -26,6 +26,8 @@ protected:
 	// 구현입니다.
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -54,6 +56,10 @@ void CMFCEx01Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST, m_List);
 	// DDX_Control(pDX, IDC_View, m_PictureControl);
 	DDX_Control(pDX, IDC_View, m_Pic);
+	DDX_Control(pDX, IDC_EDIT1, center_X);
+	DDX_Control(pDX, IDC_EDIT2, center_Y);
+	DDX_Control(pDX, IDC_EDIT3, size_X);
+	DDX_Control(pDX, IDC_EDIT4, size_Y);
 }
 
 BEGIN_MESSAGE_MAP(CMFCEx01Dlg, CDialogEx)
@@ -65,7 +71,7 @@ BEGIN_MESSAGE_MAP(CMFCEx01Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_AddR, &CMFCEx01Dlg::OnBtnClickedAddR)
 	ON_BN_CLICKED(IDC_AddC, &CMFCEx01Dlg::OnBtnClickedAddC)
 	ON_BN_CLICKED(IDC_DEL, &CMFCEx01Dlg::OnBnClickedDel)
-	ON_LBN_SELCHANGE(IDC_LIST, &CMFCEx01Dlg::OnLbnSelchangeList)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, &CMFCEx01Dlg::OnLvnItemchangedList)
 END_MESSAGE_MAP()
 
 // CMFCEx01Dlg 메시지 처리기
@@ -104,6 +110,9 @@ BOOL CMFCEx01Dlg::OnInitDialog()
 	obj_Type = 0;
 	count_R = 0;
 	count_C = 0;
+	count_T = 0;
+
+	objData;
 
 	m_Pic.GetClientRect(&view);
 
@@ -205,8 +214,8 @@ void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 	// 브러시 설정
 	CBrush* pOldBrush = (CBrush*)pDC->SelectObject(GetStockObject(NULL_BRUSH));
-
 	CString obj_Str;
+	count_T++;
 	pDC->SelectClipRgn(&rgn);
 	if (view.PtInRect(point) && view.PtInRect(start_pos)) {
 		switch (obj_Type)
@@ -216,20 +225,21 @@ void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 			count_R++;  // 사각형 개수 증가
 			obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
 			objData.emplace_back(RECTANGLE, start_pos, point);
-			m_List.InsertString(-1, obj_Str);	// 리스트에 객체 추가
+			m_List.InsertItem(count_T, obj_Str);	// 리스트에 객체 추가
 			break;
 		case 2:
 			pDC->Ellipse(start_pos.x, start_pos.y, point.x, point.y);
 			count_C++;  // 원 개수 증가
 			obj_Str.Format(_T("Circle %d"), count_C);  // 원 이름 설정
 			objData.emplace_back(CIRCLE, start_pos, point);
-			m_List.InsertString(-1, obj_Str);	// 리스트에 객체 추가
+			m_List.InsertItem(count_T, obj_Str);	// 리스트에 객체 추가
 			break;
 		default:
 			break;
 		}
 		pDC->SelectClipRgn(NULL); // 영역 설정 해제 
 		pStatic->ReleaseDC(pDC);
+
 	}
 
 }
@@ -255,7 +265,21 @@ void CMFCEx01Dlg::OnBnClickedDel()
 
 
 
-void CMFCEx01Dlg::OnLbnSelchangeList()
+
+void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 {
+	selectedIndex = m_List.GetSelectionMark();
+
+	if (!objData.empty()){
+		//center_X = CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP);
+	}
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+CPoint CMFCEx01Dlg::CalculateCenter(const CPoint& start, const CPoint& end)
+{
+	return CPoint();
 }

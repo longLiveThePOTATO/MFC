@@ -37,13 +37,18 @@ public:
 	int obj_Type;
 	int count_R;
 	int count_C;
+	int count_T;
 	int selectedIndex; // 선택된 인덱스 변수 추가
 	CPoint start_pos;
 	CString obj_Str;
-	CListBox m_List;
+	CListCtrl m_List;
 	CBrush m_Brush;
 	CStatic m_Pic;
 	CRect view;
+	CEdit center_X;
+	CEdit center_Y;
+	CEdit size_X;
+	CEdit size_Y;
 
 	enum ShapeType {RECTANGLE, CIRCLE};
 	struct ObjData
@@ -51,8 +56,10 @@ public:
 		ShapeType type;
 		CPoint sP;
 		CPoint eP;
+		std::string name;
+
 		ObjData(ShapeType t, CPoint start, CPoint end)
-			: type(t), sP(start), eP(end) {}
+			: type(t), sP(start), eP(end){}
 	};
 	std::vector<ObjData> objData;
 
@@ -61,7 +68,8 @@ public:
 	afx_msg void OnBtnClickedAddR();
 	afx_msg void OnBtnClickedAddC();
 	afx_msg void OnBnClickedDel();
-	afx_msg void OnLbnSelchangeList();
+	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
 
 	void DrawShape(CDC* pDC, const ObjData& objData, COLORREF color); // 도형을 그리는 함수 선언
+	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
 };
