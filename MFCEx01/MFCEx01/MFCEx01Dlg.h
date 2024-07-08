@@ -5,13 +5,11 @@
 #pragma once
 #include "afxwin.h"
 #include "color.h"
+#include <vector>
 
 // CMFCEx01Dlg 대화 상자
 class CMFCEx01Dlg : public CDialogEx
 {
-private:
-	CPoint start_pos;
-
 // 생성입니다.
 public:
 	CMFCEx01Dlg(CWnd* pParent = NULL);	// 표준 생성자입니다.
@@ -39,16 +37,31 @@ public:
 	int obj_Type;
 	int count_R;
 	int count_C;
+	int selectedIndex; // 선택된 인덱스 변수 추가
+	CPoint start_pos;
 	CString obj_Str;
 	CListBox m_List;
 	CBrush m_Brush;
 	CStatic m_Pic;
 	CRect view;
 
+	enum ShapeType {RECTANGLE, CIRCLE};
+	struct ObjData
+	{
+		ShapeType type;
+		CPoint sP;
+		CPoint eP;
+		ObjData(ShapeType t, CPoint start, CPoint end)
+			: type(t), sP(start), eP(end) {}
+	};
+	std::vector<ObjData> objData;
+
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBtnClickedAddR();
 	afx_msg void OnBtnClickedAddC();
-	afx_msg void OnCanvasView();
 	afx_msg void OnBnClickedDel();
+	afx_msg void OnLbnSelchangeList();
+
+	void DrawShape(CDC* pDC, const ObjData& objData, COLORREF color); // 도형을 그리는 함수 선언
 };

@@ -64,8 +64,8 @@ BEGIN_MESSAGE_MAP(CMFCEx01Dlg, CDialogEx)
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_AddR, &CMFCEx01Dlg::OnBtnClickedAddR)
 	ON_BN_CLICKED(IDC_AddC, &CMFCEx01Dlg::OnBtnClickedAddC)
-	// ON_STN_CLICKED(IDC_View, &CMFCEx01Dlg::OnCanvasView)
 	ON_BN_CLICKED(IDC_DEL, &CMFCEx01Dlg::OnBnClickedDel)
+	ON_LBN_SELCHANGE(IDC_LIST, &CMFCEx01Dlg::OnLbnSelchangeList)
 END_MESSAGE_MAP()
 
 // CMFCEx01Dlg 메시지 처리기
@@ -215,12 +215,14 @@ void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 			pDC->Rectangle(start_pos.x, start_pos.y, point.x, point.y);
 			count_R++;  // 사각형 개수 증가
 			obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
+			objData.emplace_back(RECTANGLE, start_pos, point);
 			m_List.InsertString(-1, obj_Str);	// 리스트에 객체 추가
 			break;
 		case 2:
 			pDC->Ellipse(start_pos.x, start_pos.y, point.x, point.y);
 			count_C++;  // 원 개수 증가
 			obj_Str.Format(_T("Circle %d"), count_C);  // 원 이름 설정
+			objData.emplace_back(CIRCLE, start_pos, point);
 			m_List.InsertString(-1, obj_Str);	// 리스트에 객체 추가
 			break;
 		default:
@@ -249,4 +251,11 @@ void CMFCEx01Dlg::OnBnClickedDel()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	obj_Type = 0;
+}
+
+
+
+void CMFCEx01Dlg::OnLbnSelchangeList()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
