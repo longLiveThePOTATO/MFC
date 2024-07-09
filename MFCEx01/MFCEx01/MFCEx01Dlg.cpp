@@ -268,22 +268,34 @@ void CMFCEx01Dlg::OnBnClickedDel()
 
 void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	selectedIndex = m_List.GetSelectionMark();
-
-	if (!objData.empty()){
-		//SetDlgItemInt(IDC_EDIT1, 1234)
-		CString str;
-		str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
-		center_X.SetWindowText(str);
-		str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
-		center_Y.SetWindowText(str);
-		str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
-		size_X.SetWindowText(str);
-		str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
-		size_Y.SetWindowText(str);
-	}
+	// Get the selected item index
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	POSITION pos = m_List.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		center_X.SetWindowText(_T(""));
+		center_Y.SetWindowText(_T(""));
+		size_X.SetWindowText(_T(""));
+		size_Y.SetWindowText(_T(""));
+	}
+	else
+	{
+		while (pos)
+		{
+			selectedIndex = m_List.GetNextSelectedItem(pos);
+			CString str;
+			str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
+			center_X.SetWindowText(str);
+			str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
+			center_Y.SetWindowText(str);
+			str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
+			size_X.SetWindowText(str);
+			str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
+			size_Y.SetWindowText(str);
+			// you could do your own processing on nItem here
+		}
+	}
+
 	*pResult = 0;
 }
 
