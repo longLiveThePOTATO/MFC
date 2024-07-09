@@ -1,20 +1,14 @@
-﻿빌드 시작: 2024-07-08 오후 6:02:28
+﻿빌드 시작: 2024-07-09 오전 9:46:16
      1>2 노드의 "D:\MFC\MFCEx01\MFCEx01\MFCEx01.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx01.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx01.cpp MFCEx01Dlg.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx01.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx01Dlg.cpp
          MFCEx01Dlg.cpp
-         코드를 생성하고 있습니다...
-         컴파일하고 있습니다...
-         MFCEx01.cpp
-         코드를 생성하고 있습니다...
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\MFC\MFCEx01\Debug\MFCEx01.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\MFC\MFCEx01\Debug\MFCEx01.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\MFC\MFCEx01\Debug\MFCEx01.lib" /MACHINE:X86 Debug\MFCEx01.res
-         Debug\MFCEx01.obj
-         Debug\MFCEx01Dlg.obj
-         Debug\stdafx.obj
-         MFCEx01.vcxproj -> D:\MFC\MFCEx01\Debug\MFCEx01.exe
-     1>"D:\MFC\MFCEx01\MFCEx01\MFCEx01.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+     1>d:\mfc\mfcex01\mfcex01\mfcex01dlg.cpp(293): error C3867: 'CRect::Width': 함수 호출에 인수 목록이 없습니다. '&CRect::Width'을(를) 사용하여 멤버에 대한 포인터를 만드십시오.
+     1>d:\mfc\mfcex01\mfcex01\mfcex01dlg.cpp(293): error C2297: '/' : 오른쪽 피연산자 형식으로 'int (__thiscall CRect::* )(void) throw() const'을(를) 사용할 수 없습니다.
+     1>d:\mfc\mfcex01\mfcex01\mfcex01dlg.cpp(294): error C3867: 'CRect::Height': 함수 호출에 인수 목록이 없습니다. '&CRect::Height'을(를) 사용하여 멤버에 대한 포인터를 만드십시오.
+     1>d:\mfc\mfcex01\mfcex01\mfcex01dlg.cpp(294): error C2297: '/' : 오른쪽 피연산자 형식으로 'int (__thiscall CRect::* )(void) throw() const'을(를) 사용할 수 없습니다.
+     1>"D:\MFC\MFCEx01\MFCEx01\MFCEx01.vcxproj" 프로젝트를 빌드했습니다(Build 대상). - 실패
 
-빌드했습니다.
+빌드하지 못했습니다.
 
-경과 시간: 00:00:00.94
+경과 시간: 00:00:00.48

@@ -271,7 +271,16 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 	selectedIndex = m_List.GetSelectionMark();
 
 	if (!objData.empty()){
-		//center_X = CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP);
+		//SetDlgItemInt(IDC_EDIT1, 1234)
+		CString str;
+		str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
+		center_X.SetWindowText(str);
+		str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
+		center_Y.SetWindowText(str);
+		str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
+		size_X.SetWindowText(str);
+		str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
+		size_Y.SetWindowText(str);
 	}
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -281,5 +290,21 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 
 CPoint CMFCEx01Dlg::CalculateCenter(const CPoint& start, const CPoint& end)
 {
-	return CPoint();
+	int centerX = (start.x + end.x) / 2;
+	int centerY = (start.y + end.y) / 2;
+	return CPoint(centerX, centerY);
+}
+
+
+//CPoint CMFCEx01Dlg::CalculateSize()
+//{
+//	return CPoint();
+//}
+
+
+CPoint CMFCEx01Dlg::CalculateSize(const CPoint start, const CPoint end)
+{
+	int sizeX = std::abs(start.x - end.x);
+	int sizeY = std::abs(start.y - end.y);
+	return CPoint(sizeX, sizeY);
 }

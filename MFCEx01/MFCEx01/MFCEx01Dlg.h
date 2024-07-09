@@ -72,4 +72,6 @@ public:
 
 	void DrawShape(CDC* pDC, const ObjData& objData, COLORREF color); // 도형을 그리는 함수 선언
 	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
+//	CPoint CalculateSize();
+	CPoint CalculateSize(const CPoint start, const CPoint end);
 };
