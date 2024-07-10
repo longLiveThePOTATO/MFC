@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
+#define M_PI 3.14159265358979323846
 #define new DEBUG_NEW
 #endif
 
@@ -27,7 +28,7 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-	
+
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -149,18 +150,15 @@ void CMFCEx01Dlg::OnPaint()
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		int x = (view.Width() - cxIcon + 1) / 2;
 		int y = (view.Height() - cyIcon + 1) / 2;
-
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
+
 	}
 	else
 	{
 		CDialogEx::OnPaint();
 		// IDC_VIEW (m_Pic) 컨트롤의 중앙에 수직선과 수평선 그리기
-
-		int centerX = view.left + view.Width() / 2;
-		int centerY = view.top + view.Height() / 2;
-
+		//주의
 		CPaintDC dc(&m_Pic);
 		// 흰색 사각형 그리기
 		CBrush whiteBrush(WHITE); // 흰색 브러시 생성
@@ -169,15 +167,58 @@ void CMFCEx01Dlg::OnPaint()
 		CRect whiteRect(view.left, view.top, view.right, view.bottom); // 중심을 기준으로 사각형 크기 설정
 		dc.Rectangle(whiteRect); // 사각형 그리기
 
+		vCenterX = view.left + view.Width() / 2;
+		vCenterY = view.top + view.Height() / 2;
+
 		// 수직선 그리기
-		dc.MoveTo(centerX, view.top);
-		dc.LineTo(centerX, view.bottom);
+		dc.MoveTo(vCenterX, view.top);
+		dc.LineTo(vCenterX, view.bottom);
 
 		// 수평선 그리기
-		dc.MoveTo(view.left, centerY);
-		dc.LineTo(view.right, centerY);
-
+		dc.MoveTo(view.left, vCenterY);
+		dc.LineTo(view.right, vCenterY);
 		
+		CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
+		CDC* pDC = pStatic->GetDC();
+		pStatic->GetClientRect(&view);
+		CRgn rgn;
+		rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
+
+
+		// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+		UpdateData();
+		// 펜 설정
+		CPen my_pen(PS_SOLID, 2, LIGHTBLUE);
+		CPen* pOldPen = pDC->SelectObject(&my_pen);
+
+		// 브러시 설정
+		CBrush* pOldBrush = (CBrush*)pDC->SelectObject(GetStockObject(NULL_BRUSH));
+		CString obj_Str;
+		pDC->SelectClipRgn(&rgn);
+
+		// 기존에 저장된 도형 그리기
+		for (int i = 0; i < (int)objData.size(); i++)
+		{
+			if (!objData[i].bSelect)
+			{
+				DrawShape(objData[i].type, pDC, objData[i].sP, objData[i].eP);
+			}
+			else{
+				CPen my_pen(PS_SOLID, 2, LIGHTRED);
+				DrawShape(objData[i].type, pDC, objData[i].sP, objData[i].eP);
+
+			}
+		}
+	
+/*
+		for (const auto& obj : objData)
+		{
+			if (!obj.bSelect){
+				DrawShape(obj_Type, pDC, start_Pos, end_Pos);
+			}
+		}*/
+		//pDC->SelectClipRgn(NULL); // 영역 설정 해제
+		pStatic->ReleaseDC(pDC);
 	}
 }
 
@@ -188,60 +229,56 @@ HCURSOR CMFCEx01Dlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
 void CMFCEx01Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CDialogEx::OnLButtonDown(nFlags, point);
-
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	start_pos = point;
+	CString str;
+	start_Pos = CPoint(point.x-12, point.y-12);
+/*
+	str.Format(_T("%d"), start_Pos.x);
+	center_X.SetWindowText(str);
+	str.Format(_T("%d"), start_Pos.y);
+	center_Y.SetWindowText(str);*/
+
 }
 
 void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CDialogEx::OnLButtonUp(nFlags, point);
+	point = CPoint(point.x - 12, point.y - 12);
+	end_Pos = point;
+
 	CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
-	CDC* pDC = pStatic->GetDC();
-	pStatic->GetClientRect(&view);
 	CRgn rgn;
 	rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
 
-
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	UpdateData();
-	// 펜 설정
-	CPen my_pen(PS_SOLID, 2, LIGHTBLUE);
-	CPen* pOldPen = pDC->SelectObject(&my_pen);
-
-	// 브러시 설정
-	CBrush* pOldBrush = (CBrush*)pDC->SelectObject(GetStockObject(NULL_BRUSH));
-	CString obj_Str;
-	count_T++;
-	pDC->SelectClipRgn(&rgn);
-	if (view.PtInRect(point) && view.PtInRect(start_pos)) {
+	if (view.PtInRect(point) && view.PtInRect(start_Pos)) {
 		switch (obj_Type)
 		{
 		case 1:
-			pDC->Rectangle(start_pos.x, start_pos.y, point.x, point.y);
 			count_R++;  // 사각형 개수 증가
-			obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
-			objData.emplace_back(RECTANGLE, start_pos, point);
-			m_List.InsertItem(count_T, obj_Str);	// 리스트에 객체 추가
+			obj_Str.Format(_T("Rect %d"), count_R);				// 사각형 이름 설정
+			objData.emplace_back(1, start_Pos, point, false);	// 객체 데이터 저장
+			m_List.InsertItem(count_T, obj_Str);				// 리스트에 객체 추가
 			break;
 		case 2:
-			pDC->Ellipse(start_pos.x, start_pos.y, point.x, point.y);
+		{
 			count_C++;  // 원 개수 증가
-			obj_Str.Format(_T("Circle %d"), count_C);  // 원 이름 설정
-			objData.emplace_back(CIRCLE, start_pos, point);
-			m_List.InsertItem(count_T, obj_Str);	// 리스트에 객체 추가
+			obj_Str.Format(_T("Circle %d"), count_C);			// 원 이름 설정
+			objData.emplace_back(2, start_Pos, point, false);	// 객체 데이터 저장
+			m_List.InsertItem(count_T, obj_Str);				// 리스트에 객체 추가
 			break;
+
+		}
 		default:
 			break;
 		}
-		pDC->SelectClipRgn(NULL); // 영역 설정 해제 
-		pStatic->ReleaseDC(pDC);
+		Invalidate(TRUE);
 
 	}
-
 }
 
 void CMFCEx01Dlg::OnBtnClickedAddR()
@@ -256,15 +293,11 @@ void CMFCEx01Dlg::OnBtnClickedAddC()
 	obj_Type = 2;
 }
 
-
 void CMFCEx01Dlg::OnBnClickedDel()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	obj_Type = 0;
 }
-
-
-
 
 void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -284,39 +317,82 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 		{
 			selectedIndex = m_List.GetNextSelectedItem(pos);
 			CString str;
-			str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
+			objData[selectedIndex].bSelect = true;
+			CPoint sP = objData[selectedIndex].sP;
+			CPoint eP = objData[selectedIndex].eP;
+			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).x));
 			center_X.SetWindowText(str);
-			str.Format(_T("%d"), CalculateCenter(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
+			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).y));
 			center_Y.SetWindowText(str);
-			str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).x);
+			str.Format(_T("%d"), ReScale(CalculateSize(sP, eP).x));
 			size_X.SetWindowText(str);
-			str.Format(_T("%d"), CalculateSize(objData[selectedIndex].sP, objData[selectedIndex].eP).y);
+			str.Format(_T("%d"), ReScale(CalculateSize(sP, eP).y));
 			size_Y.SetWindowText(str);
-			// you could do your own processing on nItem here
+			Invalidate(FALSE);
 		}
 	}
-
+	obj_Type = 0;
 	*pResult = 0;
 }
-
 
 CPoint CMFCEx01Dlg::CalculateCenter(const CPoint& start, const CPoint& end)
 {
 	int centerX = (start.x + end.x) / 2;
 	int centerY = (start.y + end.y) / 2;
+
 	return CPoint(centerX, centerY);
 }
-
-
-//CPoint CMFCEx01Dlg::CalculateSize()
-//{
-//	return CPoint();
-//}
-
 
 CPoint CMFCEx01Dlg::CalculateSize(const CPoint start, const CPoint end)
 {
 	int sizeX = std::abs(start.x - end.x);
 	int sizeY = std::abs(start.y - end.y);
 	return CPoint(sizeX, sizeY);
+}
+
+CPoint CMFCEx01Dlg::ReScale(CPoint point)
+{
+	return CPoint(point.x * 100 / view.Width(), point.y * 100 / view.Height());
+}
+
+void CMFCEx01Dlg::DrawEllipse(CDC* pDC, const CPoint& center, int a, int b)
+{
+	// 타원의 중심 좌표와 장축 반지름(a), 단축 반지름(b)을 입력으로 받음
+
+	// 타원을 360도로 나누어 점을 찍음
+	for (int angle = 0; angle < 360; angle++)
+	{
+		// 각도를 라디안으로 변환
+		double radians = angle * M_PI / 180.0;
+
+		// 타원의 점 계산
+		int x = center.x + (int)(a * cos(radians));
+		int y = center.y - (int)(b * sin(radians)); // MFC 좌표계에서는 y축이 반대로 되어 있음
+
+		if (angle == 0) {
+			pDC->MoveTo(x, y);
+		}
+		else {
+			pDC->LineTo(x, y);
+		}
+	}
+}
+
+void CMFCEx01Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
+{
+	switch (type)
+	{
+	case 1:
+		pDC->Rectangle(sP.x, sP.y, eP.x, eP.y);
+		break;
+	case 2:
+	{
+		CPoint radius = CalculateSize(sP, eP);
+		CPoint center = CalculateCenter(sP, eP);
+		DrawEllipse(pDC, center, radius.x, radius.y);
+	}
+	break;
+	default:
+		break;
+	}
 }

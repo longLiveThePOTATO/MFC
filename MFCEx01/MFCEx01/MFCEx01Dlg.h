@@ -6,7 +6,8 @@
 #include "afxwin.h"
 #include "color.h"
 #include <vector>
-
+#define CENTER 310
+#define HALFLENGTH 298
 // CMFCEx01Dlg 대화 상자
 class CMFCEx01Dlg : public CDialogEx
 {
@@ -39,7 +40,9 @@ public:
 	int count_C;
 	int count_T;
 	int selectedIndex; // 선택된 인덱스 변수 추가
-	CPoint start_pos;
+	int vCenterX;
+	int vCenterY;
+	CPoint start_Pos, end_Pos;
 	CString obj_Str;
 	CListCtrl m_List;
 	CBrush m_Brush;
@@ -50,16 +53,16 @@ public:
 	CEdit size_X;
 	CEdit size_Y;
 
-	enum ShapeType {RECTANGLE, CIRCLE};
 	struct ObjData
 	{
-		ShapeType type;
+		int type;
 		CPoint sP;
 		CPoint eP;
 		std::string name;
+		BOOL bSelect;
 
-		ObjData(ShapeType t, CPoint start, CPoint end)
-			: type(t), sP(start), eP(end){}
+		ObjData(int t, CPoint start, CPoint end, bool flag)
+			: type(t), sP(start), eP(end), bSelect(flag){}
 	};
 	std::vector<ObjData> objData;
 
@@ -70,8 +73,9 @@ public:
 	afx_msg void OnBnClickedDel();
 	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
 
-	void DrawShape(CDC* pDC, const ObjData& objData, COLORREF color); // 도형을 그리는 함수 선언
+	void DrawEllipse(CDC* pDC, const CPoint& center, int a, int b);
 	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
-//	CPoint CalculateSize();
 	CPoint CalculateSize(const CPoint start, const CPoint end);
+	CPoint ReScale(CPoint point);
+	void DrawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
 };
