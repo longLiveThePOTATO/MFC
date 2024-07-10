@@ -39,7 +39,7 @@ public:
 	int count_R;
 	int count_C;
 	int count_T;
-	int selectedIndex; // 선택된 인덱스 변수 추가
+	int selectedIndex = NULL; // 선택된 인덱스 변수 추가
 	int vCenterX;
 	int vCenterY;
 	CPoint start_Pos, end_Pos;
@@ -78,4 +78,5 @@ public:
 	CPoint CalculateSize(const CPoint start, const CPoint end);
 	CPoint ReScale(CPoint point);
 	void DrawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
+	void DrawRectangle(CDC* pDC, const CPoint& start, const CPoint& end);
 };

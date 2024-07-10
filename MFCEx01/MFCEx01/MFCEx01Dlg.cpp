@@ -184,32 +184,43 @@ void CMFCEx01Dlg::OnPaint()
 		CRgn rgn;
 		rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
 
-
 		// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 		UpdateData();
-		// 펜 설정
-		CPen my_pen(PS_SOLID, 2, LIGHTBLUE);
-		CPen* pOldPen = pDC->SelectObject(&my_pen);
+
+		// 기본 펜 설정
+		CPen default_pen(PS_SOLID, 2, LIGHTBLUE);
+		CPen* pOldPen = pDC->SelectObject(&default_pen);
 
 		// 브러시 설정
 		CBrush* pOldBrush = (CBrush*)pDC->SelectObject(GetStockObject(NULL_BRUSH));
-		CString obj_Str;
 		pDC->SelectClipRgn(&rgn);
+		// 현재 선택된 객체 인덱스
+		int sIndex = -1;
 
 		// 기존에 저장된 도형 그리기
 		for (int i = 0; i < (int)objData.size(); i++)
 		{
 			if (!objData[i].bSelect)
 			{
+				// 기본 펜으로 그리기
 				DrawShape(objData[i].type, pDC, objData[i].sP, objData[i].eP);
 			}
-			else{
-				CPen my_pen(PS_SOLID, 2, LIGHTRED);
-				DrawShape(objData[i].type, pDC, objData[i].sP, objData[i].eP);
-
+			else
+			{
+				sIndex = i;
 			}
 		}
-	
+		if (sIndex != -1){
+			// 빨간 펜으로 그리기 (임시로 펜 변경)
+			CPen red_pen(PS_SOLID, 2, LIGHTRED);
+			CPen* pOldPenTemp = pDC->SelectObject(&red_pen);
+
+			DrawShape(objData[sIndex].type, pDC, objData[sIndex].sP, objData[sIndex].eP);
+
+			// 원래 펜으로 복원
+			pDC->SelectObject(pOldPenTemp);
+		}
+
 /*
 		for (const auto& obj : objData)
 		{
@@ -217,7 +228,7 @@ void CMFCEx01Dlg::OnPaint()
 				DrawShape(obj_Type, pDC, start_Pos, end_Pos);
 			}
 		}*/
-		//pDC->SelectClipRgn(NULL); // 영역 설정 해제
+		pDC->SelectClipRgn(NULL); // 영역 설정 해제
 		pStatic->ReleaseDC(pDC);
 	}
 }
@@ -262,14 +273,14 @@ void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 			count_R++;  // 사각형 개수 증가
 			obj_Str.Format(_T("Rect %d"), count_R);				// 사각형 이름 설정
 			objData.emplace_back(1, start_Pos, point, false);	// 객체 데이터 저장
-			m_List.InsertItem(count_T, obj_Str);				// 리스트에 객체 추가
+			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// 리스트에 객체 추가
 			break;
 		case 2:
 		{
 			count_C++;  // 원 개수 증가
 			obj_Str.Format(_T("Circle %d"), count_C);			// 원 이름 설정
 			objData.emplace_back(2, start_Pos, point, false);	// 객체 데이터 저장
-			m_List.InsertItem(count_T, obj_Str);				// 리스트에 객체 추가
+			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// 리스트에 객체 추가
 			break;
 
 		}
@@ -328,6 +339,18 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 			size_X.SetWindowText(str);
 			str.Format(_T("%d"), ReScale(CalculateSize(sP, eP).y));
 			size_Y.SetWindowText(str);
+			for (int i = 0; i < (int)objData.size(); i++)
+			{
+				if (i != selectedIndex)
+				{
+					objData[i].bSelect = false;
+				}
+				else
+				{
+					continue;
+				}
+			}
+
 			Invalidate(FALSE);
 		}
 	}
@@ -337,8 +360,8 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 
 CPoint CMFCEx01Dlg::CalculateCenter(const CPoint& start, const CPoint& end)
 {
-	int centerX = (start.x + end.x) / 2;
-	int centerY = (start.y + end.y) / 2;
+	int centerX = (start.x + end.x) / 2 - HALFLENGTH;
+	int centerY = (start.y + end.y) / 2 - HALFLENGTH;
 
 	return CPoint(centerX, centerY);
 }
@@ -358,13 +381,13 @@ CPoint CMFCEx01Dlg::ReScale(CPoint point)
 void CMFCEx01Dlg::DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius)
 {
 	// 타원을 360도로 나누어 점을 찍음
-	for (int angle = 0; angle < 36; angle++)
+	for (int angle = 0; angle < 360; angle++)
 	{
 		// 각도를 라디안으로 변환
 		double radians = angle * M_PI / 180.0;
 
-		int x = center.x + (int)(radius.x * cos(radians)/2);
-		int y = center.y - (int)(radius.y * sin(radians)/2);
+		int x = center.x + (int)(radius.x * cos(radians) / 2);
+		int y = center.y - (int)(radius.y * sin(radians) / 2);
 
 		if (angle == 0) {
 			pDC->MoveTo(x, y);
@@ -375,12 +398,23 @@ void CMFCEx01Dlg::DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radi
 	}
 }
 
+void CMFCEx01Dlg::DrawRectangle(CDC* pDC, const CPoint& start, const CPoint& end)
+{
+	pDC->MoveTo(start);
+	pDC->LineTo(start.x, end.y);
+	pDC->LineTo(end.x, end.y);
+	pDC->LineTo(end.x, start.y);
+	pDC->LineTo(start);
+
+
+}
+
 void CMFCEx01Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 {
 	switch (type)
 	{
 	case 1:
-		pDC->Rectangle(sP.x, sP.y, eP.x, eP.y);
+		DrawRectangle(pDC, sP, eP);
 		break;
 	case 2:
 	{
@@ -393,3 +427,4 @@ void CMFCEx01Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 		break;
 	}
 }
+
