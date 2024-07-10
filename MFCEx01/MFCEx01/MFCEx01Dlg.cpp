@@ -355,19 +355,16 @@ CPoint CMFCEx01Dlg::ReScale(CPoint point)
 	return CPoint(point.x * 100 / view.Width(), point.y * 100 / view.Height());
 }
 
-void CMFCEx01Dlg::DrawEllipse(CDC* pDC, const CPoint& center, int a, int b)
+void CMFCEx01Dlg::DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius)
 {
-	// 타원의 중심 좌표와 장축 반지름(a), 단축 반지름(b)을 입력으로 받음
-
 	// 타원을 360도로 나누어 점을 찍음
-	for (int angle = 0; angle < 360; angle++)
+	for (int angle = 0; angle < 36; angle++)
 	{
 		// 각도를 라디안으로 변환
 		double radians = angle * M_PI / 180.0;
 
-		// 타원의 점 계산
-		int x = center.x + (int)(a * cos(radians));
-		int y = center.y - (int)(b * sin(radians)); // MFC 좌표계에서는 y축이 반대로 되어 있음
+		int x = center.x + (int)(radius.x * cos(radians)/2);
+		int y = center.y - (int)(radius.y * sin(radians)/2);
 
 		if (angle == 0) {
 			pDC->MoveTo(x, y);
@@ -389,7 +386,7 @@ void CMFCEx01Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 	{
 		CPoint radius = CalculateSize(sP, eP);
 		CPoint center = CalculateCenter(sP, eP);
-		DrawEllipse(pDC, center, radius.x, radius.y);
+		DrawEllipse(pDC, center, radius);
 	}
 	break;
 	default:

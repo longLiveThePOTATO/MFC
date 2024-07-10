@@ -73,7 +73,7 @@ public:
 	afx_msg void OnBnClickedDel();
 	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
 
-	void DrawEllipse(CDC* pDC, const CPoint& center, int a, int b);
+	void DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius);
 	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
 	CPoint CalculateSize(const CPoint start, const CPoint end);
 	CPoint ReScale(CPoint point);
