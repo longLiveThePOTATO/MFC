@@ -101,6 +101,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CBufferDC.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="MFCEx01.h" />
     <ClInclude Include="MFCEx01Dlg.h" />

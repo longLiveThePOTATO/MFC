@@ -306,8 +306,33 @@ void CMFCEx01Dlg::OnBtnClickedAddC()
 
 void CMFCEx01Dlg::OnBnClickedDel()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
 	obj_Type = 0;
+	// 선택된 리스트 아이템의 인덱스를 가져옵니다.
+	POSITION pos = m_List.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		return;
+	}
+
+	// 선택된 항목의 인덱스를 호출
+	int selectedIndex = m_List.GetNextSelectedItem(pos);
+	if (selectedIndex >= 0 && selectedIndex < objData.size())
+	{
+		// objData에서 선택된 항목을 삭제
+		objData.erase(objData.begin() + selectedIndex);
+
+		// m_List에서 선택된 항목을 삭제
+		m_List.DeleteItem(selectedIndex);
+	}
+
+	// 편집 컨트롤에 있는 텍스트 삭제
+	center_X.SetWindowText(_T(""));
+	center_Y.SetWindowText(_T(""));
+	size_X.SetWindowText(_T(""));
+	size_Y.SetWindowText(_T(""));
+
+	Invalidate();
 }
 
 void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
@@ -381,7 +406,7 @@ CPoint CMFCEx01Dlg::ReScale(CPoint point)
 void CMFCEx01Dlg::DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius)
 {
 	// 타원을 360도로 나누어 점을 찍음
-	for (int angle = 0; angle < 360; angle++)
+	for (int angle = 0; angle < 361; angle++)
 	{
 		// 각도를 라디안으로 변환
 		double radians = angle * M_PI / 180.0;
@@ -420,6 +445,8 @@ void CMFCEx01Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 	{
 		CPoint radius = CalculateSize(sP, eP);
 		CPoint center = CalculateCenter(sP, eP);
+		center.x += HALFLENGTH;
+		center.y += HALFLENGTH;
 		DrawEllipse(pDC, center, radius);
 	}
 	break;
