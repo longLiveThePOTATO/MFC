@@ -363,7 +363,7 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 			CPoint eP = objData[selectedIndex].eP;
 			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).x));
 			center_X.SetWindowText(str);
-			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).y));
+			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).y*(-1)));
 			center_Y.SetWindowText(str);
 			str.Format(_T("%d"), ReScale(CalculateSize(sP, eP).x));
 			size_X.SetWindowText(str);
