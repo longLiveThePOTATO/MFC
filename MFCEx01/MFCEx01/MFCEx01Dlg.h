@@ -79,4 +79,5 @@ public:
 	CPoint ReScale(CPoint point);
 	void DrawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
 	void DrawRectangle(CDC* pDC, const CPoint& start, const CPoint& end);
+	void OnDrawImage();
 };

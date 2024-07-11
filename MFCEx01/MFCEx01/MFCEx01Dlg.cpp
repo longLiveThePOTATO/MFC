@@ -156,6 +156,7 @@ void CMFCEx01Dlg::OnPaint()
 	}
 	else
 	{
+
 		CDialogEx::OnPaint();
 		// IDC_VIEW (m_Pic) 컨트롤의 중앙에 수직선과 수평선 그리기
 		//주의
@@ -178,6 +179,7 @@ void CMFCEx01Dlg::OnPaint()
 		dc.MoveTo(view.left, vCenterY);
 		dc.LineTo(view.right, vCenterY);
 		
+		/*
 		CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
 		CDC* pDC = pStatic->GetDC();
 		pStatic->GetClientRect(&view);
@@ -221,15 +223,17 @@ void CMFCEx01Dlg::OnPaint()
 			pDC->SelectObject(pOldPenTemp);
 		}
 
-/*
-		for (const auto& obj : objData)
-		{
-			if (!obj.bSelect){
-				DrawShape(obj_Type, pDC, start_Pos, end_Pos);
-			}
-		}*/
+
+		//for (const auto& obj : objData)
+		//{
+		//	if (!obj.bSelect){
+		//		DrawShape(obj_Type, pDC, start_Pos, end_Pos);
+		//	}
+		//}
 		pDC->SelectClipRgn(NULL); // 영역 설정 해제
 		pStatic->ReleaseDC(pDC);
+		*/
+		
 	}
 }
 
@@ -287,7 +291,8 @@ void CMFCEx01Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 		default:
 			break;
 		}
-		Invalidate(TRUE);
+		//Invalidate();
+		OnDrawImage();
 
 	}
 }
@@ -331,8 +336,8 @@ void CMFCEx01Dlg::OnBnClickedDel()
 	center_Y.SetWindowText(_T(""));
 	size_X.SetWindowText(_T(""));
 	size_Y.SetWindowText(_T(""));
-
-	Invalidate();
+	//Invalidate();
+	OnDrawImage();
 }
 
 void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
@@ -375,8 +380,8 @@ void CMFCEx01Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 					continue;
 				}
 			}
-
-			Invalidate(FALSE);
+			//Invalidate();
+			OnDrawImage();
 		}
 	}
 	obj_Type = 0;
@@ -454,4 +459,96 @@ void CMFCEx01Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 		break;
 	}
 }
+void CMFCEx01Dlg::OnDrawImage()
+{
+	// Picture Control 가져오기
+	CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
 
+	// Picture Control DC 가져오기
+	CDC* pDC = pStatic->GetDC();
+
+	// Picture Control의 클라이언트 영역 크기 구하기
+	CRect view;
+	pStatic->GetClientRect(&view);
+
+	// 메모리 DC와 비트맵 생성
+	CDC memDC;
+	CBitmap bitmap;
+	memDC.CreateCompatibleDC(pDC);
+	bitmap.CreateCompatibleBitmap(pDC, view.Width(), view.Height());
+
+	// 비트맵을 메모리 DC에 선택
+	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+
+	// 임시 버퍼(memDC)에 그리기 작업 수행
+	// memDC.FillSolidRect(view, RGB(0, 0, 0)); // 검은색 배경
+
+	// 흰색 사각형 그리기
+	CBrush whiteBrush(WHITE); // 흰색 브러시 생성
+	memDC.SelectObject(&whiteBrush); // 흰색 브러시 선택
+	memDC.Rectangle(view.left, view.top, view.right, view.bottom);
+
+	int vCenterX = view.left + view.Width() / 2;
+	int vCenterY = view.top + view.Height() / 2;
+
+	// 수직선 그리기
+	memDC.MoveTo(vCenterX, view.top);
+	memDC.LineTo(vCenterX, view.bottom);
+
+	// 수평선 그리기
+	memDC.MoveTo(view.left, vCenterY);
+	memDC.LineTo(view.right, vCenterY);
+
+	// 기본 펜 설정
+	CPen default_pen(PS_SOLID, 2, LIGHTBLUE); 
+	CPen* pOldPen = memDC.SelectObject(&default_pen);
+
+	// 브러시 설정
+	memDC.SelectStockObject(NULL_BRUSH);
+
+	// 그리기 영역 설정
+	CRgn rgn;
+	rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
+	memDC.SelectClipRgn(&rgn);
+
+	// 기존에 저장된 도형 그리기
+	int sIndex = -1;
+	for (int i = 0; i < objData.size(); ++i)
+	{
+		if (!objData[i].bSelect)
+		{
+			// 기본 펜으로 그리기
+			DrawShape(objData[i].type, &memDC, objData[i].sP, objData[i].eP);
+		}
+		else
+		{
+			sIndex = i;
+		}
+	}
+
+	// 선택된 도형 빨간 펜으로 그리기
+	if (sIndex != -1)
+	{
+		CPen red_pen(PS_SOLID, 2, LIGHTRED);
+		CPen* pOldPenTemp = memDC.SelectObject(&red_pen);
+
+		DrawShape(objData[sIndex].type, &memDC, objData[sIndex].sP, objData[sIndex].eP);
+
+		// 원래 펜으로 복원
+		memDC.SelectObject(pOldPenTemp);
+	}
+
+	// 그리기 영역 해제
+	memDC.SelectClipRgn(NULL);
+
+	// 메모리 DC에서 비트맵을 화면 DC로 복사하여 출력
+	pDC->BitBlt(view.left, view.top, view.Width(), view.Height(), &memDC, 0, 0, SRCCOPY);
+
+	// 자원 해제
+	memDC.SelectObject(pOldBitmap);
+	memDC.DeleteDC();
+	bitmap.DeleteObject();
+
+	// Picture Control DC 해제
+	pStatic->ReleaseDC(pDC);
+}
