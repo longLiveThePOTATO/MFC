@@ -1,4 +1,4 @@
-﻿빌드 시작: 2024-07-11 오전 11:38:45
+﻿빌드 시작: 2024-07-12 오후 2:08:13
      1>2 노드의 "D:\MFC\MFCEx01\MFCEx01\MFCEx01.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx01.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx01Dlg.cpp
@@ -15,4 +15,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:00.42
+경과 시간: 00:00:00.48
