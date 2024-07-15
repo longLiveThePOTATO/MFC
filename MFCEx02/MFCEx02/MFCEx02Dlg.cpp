@@ -1,4 +1,4 @@
-// MFCEx02Dlg.cpp : ±¸Çö ÆÄÀÏ
+ï»¿// MFCEx02Dlg.cpp : êµ¬í˜„ íŒŒì¼
 //
 
 #include "stdafx.h"
@@ -11,10 +11,10 @@
 #define new DEBUG_NEW
 #endif
 
-// ÀÀ¿ë ÇÁ·Î±×·¥ Á¤º¸¿¡ »ç¿ëµÇ´Â CAboutDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// ì‘ìš© í”„ë¡œê·¸ë¨ ì •ë³´ì— ì‚¬ìš©ë˜ëŠ” CAboutDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 
-// CMFCEx02Dlg ´ëÈ­ »óÀÚ
+// CMFCEx02Dlg ëŒ€í™” ìƒì
 
 CMFCEx02Dlg::CMFCEx02Dlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCEx02Dlg::IDD, pParent)
@@ -32,6 +32,8 @@ void CMFCEx02Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT2, center_Y);
 	DDX_Control(pDX, IDC_EDIT3, size_X);
 	DDX_Control(pDX, IDC_EDIT4, size_Y);
+	DDX_Control(pDX, IDC_COMPORT, m_Comport);
+	DDX_Control(pDX, IDC_BAUDRATE, m_BaudRate);
 }
 
 BEGIN_MESSAGE_MAP(CMFCEx02Dlg, CDialogEx)
@@ -45,27 +47,30 @@ BEGIN_MESSAGE_MAP(CMFCEx02Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_DEL, &CMFCEx02Dlg::OnBnClickedDel)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, &CMFCEx02Dlg::OnLvnItemchangedList)
 	//ON_STN_CLICKED(IDC_View, &CMFCEx02Dlg::OnStnClickedView)
+	ON_CBN_DROPDOWN(IDC_COMPORT, &CMFCEx02Dlg::OnCbnDropdownComport)
+	ON_CBN_DROPDOWN(IDC_BAUDRATE, &CMFCEx02Dlg::OnCbnDropdownBaudRate)
+	ON_BN_CLICKED(IDC_CONNECT, &CMFCEx02Dlg::OnBnClickedConnect)
 END_MESSAGE_MAP()
 
-// CMFCEx02Dlg ¸Ş½ÃÁö Ã³¸®±â
+// CMFCEx02Dlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
 
 BOOL CMFCEx02Dlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ½Ã½ºÅÛ ¸Ş´º¿¡ "Á¤º¸..." ¸Ş´º Ç×¸ñÀ» Ãß°¡ÇÕ´Ï´Ù.
+	// ì‹œìŠ¤í…œ ë©”ë‰´ì— "ì •ë³´..." ë©”ë‰´ í•­ëª©ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 
-	// IDM_ABOUTBOX´Â ½Ã½ºÅÛ ¸í·É ¹üÀ§¿¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.
+	// IDM_ABOUTBOXëŠ” ì‹œìŠ¤í…œ ëª…ë ¹ ë²”ìœ„ì— ìˆì–´ì•¼ í•©ë‹ˆë‹¤.
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 
 
-	// ÀÌ ´ëÈ­ »óÀÚÀÇ ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.  ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ ÁÖ Ã¢ÀÌ ´ëÈ­ »óÀÚ°¡ ¾Æ´Ò °æ¿ì¿¡´Â
-	//  ÇÁ·¹ÀÓ¿öÅ©°¡ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
-	SetIcon(m_hIcon, TRUE);            // Å« ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
-	SetIcon(m_hIcon, FALSE);        // ÀÛÀº ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
+	// ì´ ëŒ€í™” ìƒìì˜ ì•„ì´ì½˜ì„ ì„¤ì •í•©ë‹ˆë‹¤.  ì‘ìš© í”„ë¡œê·¸ë¨ì˜ ì£¼ ì°½ì´ ëŒ€í™” ìƒìê°€ ì•„ë‹ ê²½ìš°ì—ëŠ”
+	//  í”„ë ˆì„ì›Œí¬ê°€ ì´ ì‘ì—…ì„ ìë™ìœ¼ë¡œ ìˆ˜í–‰í•©ë‹ˆë‹¤.
+	SetIcon(m_hIcon, TRUE);            // í° ì•„ì´ì½˜ì„ ì„¤ì •í•©ë‹ˆë‹¤.
+	SetIcon(m_hIcon, FALSE);        // ì‘ì€ ì•„ì´ì½˜ì„ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	// TODO: ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 	// m_PictureControl.SubclassDlgItem(IDC_View, this);
 	obj_Type = 0;
 	count_R = 0;
@@ -76,28 +81,37 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 
 	m_Pic.GetClientRect(&view);
 
-	return TRUE;  // Æ÷Ä¿½º¸¦ ÄÁÆ®·Ñ¿¡ ¼³Á¤ÇÏÁö ¾ÊÀ¸¸é TRUE¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+	// ë³´ë“œë ˆì´íŠ¸ ì½¤ë³´ë°•ìŠ¤ ì´ˆê¸°í™”
+	m_BaudRate.AddString(_T("9600"));
+	m_BaudRate.AddString(_T("14400"));
+	m_BaudRate.AddString(_T("19200"));
+	m_BaudRate.AddString(_T("38400"));
+	m_BaudRate.AddString(_T("57600"));
+	m_BaudRate.AddString(_T("115200"));
+	m_BaudRate.SetCurSel(0); // ê¸°ë³¸ê°’ ì„¤ì •
+
+	return TRUE;  // í¬ì»¤ìŠ¤ë¥¼ ì»¨íŠ¸ë¡¤ì— ì„¤ì •í•˜ì§€ ì•Šìœ¼ë©´ TRUEë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
 }
 
 
-// ´ëÈ­ »óÀÚ¿¡ ÃÖ¼ÒÈ­ ´ÜÃß¸¦ Ãß°¡ÇÒ °æ¿ì ¾ÆÀÌÄÜÀ» ±×¸®·Á¸é
-//  ¾Æ·¡ ÄÚµå°¡ ÇÊ¿äÇÕ´Ï´Ù.  ¹®¼­/ºä ¸ğµ¨À» »ç¿ëÇÏ´Â MFC ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ °æ¿ì¿¡´Â
-//  ÇÁ·¹ÀÓ¿öÅ©¿¡¼­ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
+// ëŒ€í™” ìƒìì— ìµœì†Œí™” ë‹¨ì¶”ë¥¼ ì¶”ê°€í•  ê²½ìš° ì•„ì´ì½˜ì„ ê·¸ë¦¬ë ¤ë©´
+//  ì•„ë˜ ì½”ë“œê°€ í•„ìš”í•©ë‹ˆë‹¤.  ë¬¸ì„œ/ë·° ëª¨ë¸ì„ ì‚¬ìš©í•˜ëŠ” MFC ì‘ìš© í”„ë¡œê·¸ë¨ì˜ ê²½ìš°ì—ëŠ”
+//  í”„ë ˆì„ì›Œí¬ì—ì„œ ì´ ì‘ì—…ì„ ìë™ìœ¼ë¡œ ìˆ˜í–‰í•©ë‹ˆë‹¤.
 
 void CMFCEx02Dlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ±×¸®±â¸¦ À§ÇÑ µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ®ÀÔ´Ï´Ù.
+		CPaintDC dc(this); // ê·¸ë¦¬ê¸°ë¥¼ ìœ„í•œ ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ì…ë‹ˆë‹¤.
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Å¬¶óÀÌ¾ğÆ® »ç°¢Çü¿¡¼­ ¾ÆÀÌÄÜÀ» °¡¿îµ¥¿¡ ¸ÂÃä´Ï´Ù.
+		// í´ë¼ì´ì–¸íŠ¸ ì‚¬ê°í˜•ì—ì„œ ì•„ì´ì½˜ì„ ê°€ìš´ë°ì— ë§ì¶¥ë‹ˆë‹¤.
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		int x = (view.Width() - cxIcon + 1) / 2;
 		int y = (view.Height() - cyIcon + 1) / 2;
-		// ¾ÆÀÌÄÜÀ» ±×¸³´Ï´Ù.
+		// ì•„ì´ì½˜ì„ ê·¸ë¦½ë‹ˆë‹¤.
 		dc.DrawIcon(x, y, m_hIcon);
 
 	}
@@ -105,87 +119,34 @@ void CMFCEx02Dlg::OnPaint()
 	{
 
 		CDialogEx::OnPaint();
-		// IDC_VIEW (m_Pic) ÄÁÆ®·ÑÀÇ Áß¾Ó¿¡ ¼öÁ÷¼±°ú ¼öÆò¼± ±×¸®±â
-		//ÁÖÀÇ
+		// IDC_VIEW (m_Pic) ì»¨íŠ¸ë¡¤ì˜ ì¤‘ì•™ì— ìˆ˜ì§ì„ ê³¼ ìˆ˜í‰ì„  ê·¸ë¦¬ê¸°
+		//ì£¼ì˜
 		CPaintDC dc(&m_Pic);
-		// Èò»ö »ç°¢Çü ±×¸®±â
-		CBrush whiteBrush(WHITE); // Èò»ö ºê·¯½Ã »ı¼º
-		dc.SelectObject(&whiteBrush); // Èò»ö ºê·¯½Ã ¼±ÅÃ
+		// í°ìƒ‰ ì‚¬ê°í˜• ê·¸ë¦¬ê¸°
+		CBrush whiteBrush(WHITE); // í°ìƒ‰ ë¸ŒëŸ¬ì‹œ ìƒì„±
+		dc.SelectObject(&whiteBrush); // í°ìƒ‰ ë¸ŒëŸ¬ì‹œ ì„ íƒ
 
-		CRect whiteRect(view.left, view.top, view.right, view.bottom); // Áß½ÉÀ» ±âÁØÀ¸·Î »ç°¢Çü Å©±â ¼³Á¤
-		dc.Rectangle(whiteRect); // »ç°¢Çü ±×¸®±â
+		CRect whiteRect(view.left, view.top, view.right, view.bottom); // ì¤‘ì‹¬ì„ ê¸°ì¤€ìœ¼ë¡œ ì‚¬ê°í˜• í¬ê¸° ì„¤ì •
+		dc.Rectangle(whiteRect); // ì‚¬ê°í˜• ê·¸ë¦¬ê¸°
 
 		vCenterX = view.left + view.Width() / 2;
 		vCenterY = view.top + view.Height() / 2;
 
-		// ¼öÁ÷¼± ±×¸®±â
+		// ìˆ˜ì§ì„  ê·¸ë¦¬ê¸°
 		dc.MoveTo(vCenterX, view.top);
 		dc.LineTo(vCenterX, view.bottom);
 
-		// ¼öÆò¼± ±×¸®±â
+		// ìˆ˜í‰ì„  ê·¸ë¦¬ê¸°
 		dc.MoveTo(view.left, vCenterY);
 		dc.LineTo(view.right, vCenterY);
 
-		/*
-		CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
-		CDC* pDC = pStatic->GetDC();
-		pStatic->GetClientRect(&view);
-		CRgn rgn;
-		rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
 
-		// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº»°ªÀ» È£ÃâÇÕ´Ï´Ù.
-		UpdateData();
-
-		// ±âº» Ææ ¼³Á¤
-		CPen default_pen(PS_SOLID, 2, LIGHTBLUE);
-		CPen* pOldPen = pDC->SelectObject(&default_pen);
-
-		// ºê·¯½Ã ¼³Á¤
-		CBrush* pOldBrush = (CBrush*)pDC->SelectObject(GetStockObject(NULL_BRUSH));
-		pDC->SelectClipRgn(&rgn);
-		// ÇöÀç ¼±ÅÃµÈ °´Ã¼ ÀÎµ¦½º
-		int sIndex = -1;
-
-		// ±âÁ¸¿¡ ÀúÀåµÈ µµÇü ±×¸®±â
-		for (int i = 0; i < (int)objData.size(); i++)
-		{
-		if (!objData[i].bSelect)
-		{
-		// ±âº» ÆæÀ¸·Î ±×¸®±â
-		DrawShape(objData[i].type, pDC, objData[i].sP, objData[i].eP);
-		}
-		else
-		{
-		sIndex = i;
-		}
-		}
-		if (sIndex != -1){
-		// »¡°£ ÆæÀ¸·Î ±×¸®±â (ÀÓ½Ã·Î Ææ º¯°æ)
-		CPen red_pen(PS_SOLID, 2, LIGHTRED);
-		CPen* pOldPenTemp = pDC->SelectObject(&red_pen);
-
-		DrawShape(objData[sIndex].type, pDC, objData[sIndex].sP, objData[sIndex].eP);
-
-		// ¿ø·¡ ÆæÀ¸·Î º¹¿ø
-		pDC->SelectObject(pOldPenTemp);
-		}
-
-
-		//for (const auto& obj : objData)
-		//{
-		//	if (!obj.bSelect){
-		//		DrawShape(obj_Type, pDC, start_Pos, end_Pos);
-		//	}
-		//}
-		pDC->SelectClipRgn(NULL); // ¿µ¿ª ¼³Á¤ ÇØÁ¦
-		pStatic->ReleaseDC(pDC);
-		*/
 
 	}
 }
 
-// »ç¿ëÀÚ°¡ ÃÖ¼ÒÈ­µÈ Ã¢À» ²ô´Â µ¿¾È¿¡ Ä¿¼­°¡ Ç¥½ÃµÇµµ·Ï ½Ã½ºÅÛ¿¡¼­
-//  ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÕ´Ï´Ù.
+// ì‚¬ìš©ìê°€ ìµœì†Œí™”ëœ ì°½ì„ ë„ëŠ” ë™ì•ˆì— ì»¤ì„œê°€ í‘œì‹œë˜ë„ë¡ ì‹œìŠ¤í…œì—ì„œ
+//  ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 HCURSOR CMFCEx02Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -195,7 +156,7 @@ HCURSOR CMFCEx02Dlg::OnQueryDragIcon()
 void CMFCEx02Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CDialogEx::OnLButtonDown(nFlags, point);
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº»°ªÀ» È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ê°’ì„ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	CString str;
 	start_Pos = CPoint(point.x - 12, point.y - 12);
 	/*
@@ -221,17 +182,17 @@ void CMFCEx02Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 		switch (obj_Type)
 		{
 		case 1:
-			count_R++;  // »ç°¢Çü °³¼ö Áõ°¡
-			obj_Str.Format(_T("Rect %d"), count_R);				// »ç°¢Çü ÀÌ¸§ ¼³Á¤
-			objData.emplace_back(1, start_Pos, point, false);	// °´Ã¼ µ¥ÀÌÅÍ ÀúÀå
-			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// ¸®½ºÆ®¿¡ °´Ã¼ Ãß°¡
+			count_R++;  // ì‚¬ê°í˜• ê°œìˆ˜ ì¦ê°€
+			obj_Str.Format(_T("Rect %d"), count_R);				// ì‚¬ê°í˜• ì´ë¦„ ì„¤ì •
+			objData.emplace_back(1, start_Pos, point, false);	// ê°ì²´ ë°ì´í„° ì €ì¥
+			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// ë¦¬ìŠ¤íŠ¸ì— ê°ì²´ ì¶”ê°€
 			break;
 		case 2:
 		{
-			count_C++;  // ¿ø °³¼ö Áõ°¡
-			obj_Str.Format(_T("Circle %d"), count_C);			// ¿ø ÀÌ¸§ ¼³Á¤
-			objData.emplace_back(2, start_Pos, point, false);	// °´Ã¼ µ¥ÀÌÅÍ ÀúÀå
-			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// ¸®½ºÆ®¿¡ °´Ã¼ Ãß°¡
+			count_C++;  // ì› ê°œìˆ˜ ì¦ê°€
+			obj_Str.Format(_T("Circle %d"), count_C);			// ì› ì´ë¦„ ì„¤ì •
+			objData.emplace_back(2, start_Pos, point, false);	// ê°ì²´ ë°ì´í„° ì €ì¥
+			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// ë¦¬ìŠ¤íŠ¸ì— ê°ì²´ ì¶”ê°€
 			break;
 
 		}
@@ -239,52 +200,52 @@ void CMFCEx02Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 			break;
 		}
 		//Invalidate();
-		OnDrawImage();
+		onDrawImage();
 
 	}
 }
 
 void CMFCEx02Dlg::OnBtnClickedAddR()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	obj_Type = 1;
 }
 
 void CMFCEx02Dlg::OnBtnClickedAddC()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	obj_Type = 2;
 }
 
 void CMFCEx02Dlg::OnBnClickedDel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€
 	obj_Type = 0;
-	// ¼±ÅÃµÈ ¸®½ºÆ® ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º¸¦ °¡Á®¿É´Ï´Ù.
+	// ì„ íƒëœ ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œì˜ ì¸ë±ìŠ¤ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
 	POSITION pos = m_List.GetFirstSelectedItemPosition();
 	if (pos == NULL)
 	{
 		return;
 	}
 
-	// ¼±ÅÃµÈ Ç×¸ñÀÇ ÀÎµ¦½º¸¦ È£Ãâ
+	// ì„ íƒëœ í•­ëª©ì˜ ì¸ë±ìŠ¤ë¥¼ í˜¸ì¶œ
 	int selectedIndex = m_List.GetNextSelectedItem(pos);
 	if (selectedIndex >= 0 && selectedIndex < objData.size())
 	{
-		// objData¿¡¼­ ¼±ÅÃµÈ Ç×¸ñÀ» »èÁ¦
+		// objDataì—ì„œ ì„ íƒëœ í•­ëª©ì„ ì‚­ì œ
 		objData.erase(objData.begin() + selectedIndex);
 
-		// m_List¿¡¼­ ¼±ÅÃµÈ Ç×¸ñÀ» »èÁ¦
+		// m_Listì—ì„œ ì„ íƒëœ í•­ëª©ì„ ì‚­ì œ
 		m_List.DeleteItem(selectedIndex);
 	}
 
-	// ÆíÁı ÄÁÆ®·Ñ¿¡ ÀÖ´Â ÅØ½ºÆ® »èÁ¦
+	// í¸ì§‘ ì»¨íŠ¸ë¡¤ì— ìˆëŠ” í…ìŠ¤íŠ¸ ì‚­ì œ
 	center_X.SetWindowText(_T(""));
 	center_Y.SetWindowText(_T(""));
 	size_X.SetWindowText(_T(""));
 	size_Y.SetWindowText(_T(""));
 	//Invalidate();
-	OnDrawImage();
+	onDrawImage();
 }
 
 void CMFCEx02Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
@@ -328,7 +289,7 @@ void CMFCEx02Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 				}
 			}
 			//Invalidate();
-			OnDrawImage();
+			onDrawImage();
 		}
 	}
 	obj_Type = 0;
@@ -355,12 +316,12 @@ CPoint CMFCEx02Dlg::ReScale(CPoint point)
 	return CPoint(point.x * 100 / view.Width(), point.y * 100 / view.Height());
 }
 
-void CMFCEx02Dlg::DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius)
+void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius)
 {
-	// Å¸¿øÀ» 360µµ·Î ³ª´©¾î Á¡À» ÂïÀ½
+	// íƒ€ì›ì„ 360ë„ë¡œ ë‚˜ëˆ„ì–´ ì ì„ ì°ìŒ
 	for (int angle = 0; angle < 361; angle++)
 	{
-		// °¢µµ¸¦ ¶óµğ¾ÈÀ¸·Î º¯È¯
+		// ê°ë„ë¥¼ ë¼ë””ì•ˆìœ¼ë¡œ ë³€í™˜
 		double radians = angle * M_PI / 180.0;
 
 		int x = center.x + (int)(radius.x * cos(radians) / 2);
@@ -375,7 +336,7 @@ void CMFCEx02Dlg::DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radi
 	}
 }
 
-void CMFCEx02Dlg::DrawRectangle(CDC* pDC, const CPoint& start, const CPoint& end)
+void CMFCEx02Dlg::drawRectangle(CDC* pDC, const CPoint& start, const CPoint& end)
 {
 	pDC->MoveTo(start);
 	pDC->LineTo(start.x, end.y);
@@ -386,12 +347,12 @@ void CMFCEx02Dlg::DrawRectangle(CDC* pDC, const CPoint& start, const CPoint& end
 
 }
 
-void CMFCEx02Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
+void CMFCEx02Dlg::drawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 {
 	switch (type)
 	{
 	case 1:
-		DrawRectangle(pDC, sP, eP);
+		drawRectangle(pDC, sP, eP);
 		break;
 	case 2:
 	{
@@ -399,73 +360,74 @@ void CMFCEx02Dlg::DrawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
 		CPoint center = CalculateCenter(sP, eP);
 		center.x += HALFLENGTH;
 		center.y += HALFLENGTH;
-		DrawEllipse(pDC, center, radius);
+		drawEllipse(pDC, center, radius);
 	}
 	break;
 	default:
 		break;
 	}
 }
-void CMFCEx02Dlg::OnDrawImage()
+
+void CMFCEx02Dlg::onDrawImage()
 {
-	// Picture Control °¡Á®¿À±â
+	// Picture Control ê°€ì ¸ì˜¤ê¸°
 	CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
 
-	// Picture Control DC °¡Á®¿À±â
+	// Picture Control DC ê°€ì ¸ì˜¤ê¸°
 	CDC* pDC = pStatic->GetDC();
 
-	// Picture ControlÀÇ Å¬¶óÀÌ¾ğÆ® ¿µ¿ª Å©±â ±¸ÇÏ±â
+	// Picture Controlì˜ í´ë¼ì´ì–¸íŠ¸ ì˜ì—­ í¬ê¸° êµ¬í•˜ê¸°
 	CRect view;
 	pStatic->GetClientRect(&view);
 
-	// ¸Ş¸ğ¸® DC¿Í ºñÆ®¸Ê »ı¼º
+	// ë©”ëª¨ë¦¬ DCì™€ ë¹„íŠ¸ë§µ ìƒì„±
 	CDC memDC;
 	CBitmap bitmap;
 	memDC.CreateCompatibleDC(pDC);
 	bitmap.CreateCompatibleBitmap(pDC, view.Width(), view.Height());
 
-	// ºñÆ®¸ÊÀ» ¸Ş¸ğ¸® DC¿¡ ¼±ÅÃ
+	// ë¹„íŠ¸ë§µì„ ë©”ëª¨ë¦¬ DCì— ì„ íƒ
 	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
 
-	// ÀÓ½Ã ¹öÆÛ(memDC)¿¡ ±×¸®±â ÀÛ¾÷ ¼öÇà
-	// memDC.FillSolidRect(view, RGB(0, 0, 0)); // °ËÀº»ö ¹è°æ
+	// ì„ì‹œ ë²„í¼(memDC)ì— ê·¸ë¦¬ê¸° ì‘ì—… ìˆ˜í–‰
+	// memDC.FillSolidRect(view, RGB(0, 0, 0)); // ê²€ì€ìƒ‰ ë°°ê²½
 
-	// Èò»ö »ç°¢Çü ±×¸®±â
-	CBrush whiteBrush(WHITE); // Èò»ö ºê·¯½Ã »ı¼º
-	memDC.SelectObject(&whiteBrush); // Èò»ö ºê·¯½Ã ¼±ÅÃ
+	// í°ìƒ‰ ì‚¬ê°í˜• ê·¸ë¦¬ê¸°
+	CBrush whiteBrush(WHITE); // í°ìƒ‰ ë¸ŒëŸ¬ì‹œ ìƒì„±
+	memDC.SelectObject(&whiteBrush); // í°ìƒ‰ ë¸ŒëŸ¬ì‹œ ì„ íƒ
 	memDC.Rectangle(view.left, view.top, view.right, view.bottom);
 
 	int vCenterX = view.left + view.Width() / 2;
 	int vCenterY = view.top + view.Height() / 2;
 
-	// ¼öÁ÷¼± ±×¸®±â
+	// ìˆ˜ì§ì„  ê·¸ë¦¬ê¸°
 	memDC.MoveTo(vCenterX, view.top);
 	memDC.LineTo(vCenterX, view.bottom);
 
-	// ¼öÆò¼± ±×¸®±â
+	// ìˆ˜í‰ì„  ê·¸ë¦¬ê¸°
 	memDC.MoveTo(view.left, vCenterY);
 	memDC.LineTo(view.right, vCenterY);
 
-	// ±âº» Ææ ¼³Á¤
+	// ê¸°ë³¸ íœ ì„¤ì •
 	CPen default_pen(PS_SOLID, 2, LIGHTBLUE);
 	CPen* pOldPen = memDC.SelectObject(&default_pen);
 
-	// ºê·¯½Ã ¼³Á¤
+	// ë¸ŒëŸ¬ì‹œ ì„¤ì •
 	memDC.SelectStockObject(NULL_BRUSH);
 
-	// ±×¸®±â ¿µ¿ª ¼³Á¤
+	// ê·¸ë¦¬ê¸° ì˜ì—­ ì„¤ì •
 	CRgn rgn;
 	rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
 	memDC.SelectClipRgn(&rgn);
 
-	// ±âÁ¸¿¡ ÀúÀåµÈ µµÇü ±×¸®±â
+	// ê¸°ì¡´ì— ì €ì¥ëœ ë„í˜• ê·¸ë¦¬ê¸°
 	int sIndex = -1;
 	for (int i = 0; i < objData.size(); ++i)
 	{
 		if (!objData[i].bSelect)
 		{
-			// ±âº» ÆæÀ¸·Î ±×¸®±â
-			DrawShape(objData[i].type, &memDC, objData[i].sP, objData[i].eP);
+			// ê¸°ë³¸ íœìœ¼ë¡œ ê·¸ë¦¬ê¸°
+			drawShape(objData[i].type, &memDC, objData[i].sP, objData[i].eP);
 		}
 		else
 		{
@@ -473,30 +435,122 @@ void CMFCEx02Dlg::OnDrawImage()
 		}
 	}
 
-	// ¼±ÅÃµÈ µµÇü »¡°£ ÆæÀ¸·Î ±×¸®±â
+	// ì„ íƒëœ ë„í˜• ë¹¨ê°„ íœìœ¼ë¡œ ê·¸ë¦¬ê¸°
 	if (sIndex != -1)
 	{
 		CPen red_pen(PS_SOLID, 2, LIGHTRED);
 		CPen* pOldPenTemp = memDC.SelectObject(&red_pen);
 
-		DrawShape(objData[sIndex].type, &memDC, objData[sIndex].sP, objData[sIndex].eP);
+		drawShape(objData[sIndex].type, &memDC, objData[sIndex].sP, objData[sIndex].eP);
 
-		// ¿ø·¡ ÆæÀ¸·Î º¹¿ø
+		// ì›ë˜ íœìœ¼ë¡œ ë³µì›
 		memDC.SelectObject(pOldPenTemp);
 	}
 
-	// ±×¸®±â ¿µ¿ª ÇØÁ¦
+	// ê·¸ë¦¬ê¸° ì˜ì—­ í•´ì œ
 	memDC.SelectClipRgn(NULL);
 
-	// ¸Ş¸ğ¸® DC¿¡¼­ ºñÆ®¸ÊÀ» È­¸é DC·Î º¹»çÇÏ¿© Ãâ·Â
+	// ë©”ëª¨ë¦¬ DCì—ì„œ ë¹„íŠ¸ë§µì„ í™”ë©´ DCë¡œ ë³µì‚¬í•˜ì—¬ ì¶œë ¥
 	pDC->BitBlt(view.left, view.top, view.Width(), view.Height(), &memDC, 0, 0, SRCCOPY);
 
-	// ÀÚ¿ø ÇØÁ¦
+	// ìì› í•´ì œ
 	memDC.SelectObject(pOldBitmap);
 	memDC.DeleteDC();
 	bitmap.DeleteObject();
 
-	// Picture Control DC ÇØÁ¦
+	// Picture Control DC í•´ì œ
 	pStatic->ReleaseDC(pDC);
 }
 
+void CMFCEx02Dlg::getSerialPort(){
+	HKEY hKey;
+	RegOpenKey(HKEY_LOCAL_MACHINE, TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM"), &hKey);
+
+	TCHAR szData[20], szName[100];
+	DWORD index = 0, dwSize = 100, dwSize2 = 20, dwType = REG_SZ;
+	m_Comport.ResetContent();
+	memset(szData, 0x00, sizeof(szData));
+	memset(szName, 0x00, sizeof(szName));
+
+	while (ERROR_SUCCESS == RegEnumValue(hKey, index, szName, &dwSize, NULL, NULL, NULL, NULL)){
+		index++;
+		RegQueryValueEx(hKey, szName, NULL, &dwType, (LPBYTE)szData, &dwSize2);
+		m_Comport.AddString(CString(szData));
+
+		memset(szData, 0x00, sizeof(szData));
+		memset(szName, 0x00, sizeof(szName));
+		dwSize = 100;
+		dwSize2 = 20;
+	}
+	RegCloseKey(hKey);
+}
+
+void CMFCEx02Dlg::OnCbnDropdownComport()
+{
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€
+	getSerialPort();
+
+}
+
+
+void CMFCEx02Dlg::OnCbnDropdownBaudRate()
+{
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€
+	// ë³´ë“œë ˆì´íŠ¸ ì„ íƒ ì´ë²¤íŠ¸ ì²˜ë¦¬
+	int sel = m_BaudRate.GetCurSel();
+	CString strBaudRate;
+	m_BaudRate.GetLBText(sel, strBaudRate);
+	int baudRate = _ttoi(strBaudRate);
+
+	// TODO: ì„ íƒëœ ë³´ë“œë ˆì´íŠ¸ë¥¼ ì‚¬ìš©í•˜ì—¬ ì‹œë¦¬ì–¼ í†µì‹  ì„¤ì •
+	// ì˜ˆ: SetBaudRate(baudRate);
+}
+
+
+void CMFCEx02Dlg::OnBnClickedConnect()
+{
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€
+
+	// 1. ì„ íƒëœ COM í¬íŠ¸ë¥¼ ê°€ì ¸ì˜¤ê¸°
+	int selComport = m_Comport.GetCurSel();
+	if (selComport == CB_ERR) {
+		AfxMessageBox(_T("No COM Port Selected"));
+		return;
+	}
+
+	CString strComport;
+	m_Comport.GetLBText(selComport, strComport);
+
+	// 2. ì„ íƒëœ ë³´ë“œë ˆì´íŠ¸ ê°’ì„ ê°€ì ¸ì˜¤ê¸°
+	int selBaudRate = m_BaudRate.GetCurSel();
+	if (selBaudRate == CB_ERR) {
+		AfxMessageBox(_T("No Baud Rate Selected"));
+		return;
+	}
+
+	CString strBaudRate;
+	m_BaudRate.GetLBText(selBaudRate, strBaudRate);
+	int baudRate = _ttoi(strBaudRate);
+
+	/*
+	// 3. ì‹œë¦¬ì–¼ í¬íŠ¸ ì„¤ì • ë° ì—°ê²°
+	if (m_serialPort.OpenPort(strComport)) {
+		if (m_serialPort.ConfigurePort(baudRate, 8, NOPARITY, ONESTOPBIT)) {
+			if (m_serialPort.StartCommunication()) {
+				AfxMessageBox(_T("Connected Successfully"));
+			}
+			else {
+				AfxMessageBox(_T("Failed to Start Communication"));
+				m_serialPort.ClosePort();
+			}
+		}
+		else {
+			AfxMessageBox(_T("Failed to Configure Port"));
+			m_serialPort.ClosePort();
+		}
+	}
+	else {
+		AfxMessageBox(_T("Failed to Open Port"));
+	}
+	*/
+}

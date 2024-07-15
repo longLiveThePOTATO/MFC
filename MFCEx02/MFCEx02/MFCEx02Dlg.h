@@ -51,6 +51,10 @@ public:
 	CEdit center_Y;
 	CEdit size_X;
 	CEdit size_Y;
+	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
+	CPoint CalculateSize(const CPoint start, const CPoint end);
+	CPoint ReScale(CPoint point);
+	CComboBox m_Comport;
 
 	struct ObjData
 	{
@@ -71,13 +75,15 @@ public:
 	afx_msg void OnBtnClickedAddC();
 	afx_msg void OnBnClickedDel();
 	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
-
-	void DrawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius);
-	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
-	CPoint CalculateSize(const CPoint start, const CPoint end);
-	CPoint ReScale(CPoint point);
-	void DrawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
-	void DrawRectangle(CDC* pDC, const CPoint& start, const CPoint& end);
-	void OnDrawImage();
 	afx_msg void OnStnClickedView();
+	afx_msg void OnCbnDropdownComport();
+
+	void drawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
+	void drawRectangle(CDC* pDC, const CPoint& start, const CPoint& end);
+	void drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius);
+	void onDrawImage();
+	void getSerialPort();
+	afx_msg void OnCbnDropdownBaudRate();
+	CComboBox m_BaudRate;
+	afx_msg void OnBnClickedConnect();
 };
