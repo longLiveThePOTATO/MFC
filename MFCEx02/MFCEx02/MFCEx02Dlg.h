@@ -69,6 +69,8 @@ public:
 	};
 	std::vector<ObjData> objData;
 
+
+
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBtnClickedAddR();

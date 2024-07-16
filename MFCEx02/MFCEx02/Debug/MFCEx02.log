@@ -1,18 +1,19 @@
-﻿빌드 시작: 2024-07-15 오전 11:18:34
+﻿빌드 시작: 2024-07-16 오후 4:35:25
      1>2 노드의 "D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx02.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx02Dlg.cpp
          MFCEx02Dlg.cpp
-     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(232): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
-     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(424): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(251): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(443): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\MFC\MFCEx02\Debug\MFCEx02.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\MFC\MFCEx02\Debug\MFCEx02.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\MFC\MFCEx02\Debug\MFCEx02.lib" /MACHINE:X86 Debug\MFCEx02.res
          Debug\MFCEx02.obj
          Debug\MFCEx02Dlg.obj
+         Debug\RsPort.obj
          Debug\stdafx.obj
          MFCEx02.vcxproj -> D:\MFC\MFCEx02\Debug\MFCEx02.exe
      1>"D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
 
 빌드했습니다.
 
-경과 시간: 00:00:00.49
+경과 시간: 00:00:00.73

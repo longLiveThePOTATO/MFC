@@ -5,6 +5,7 @@
 #include "MFCEx02.h"
 #include "MFCEx02Dlg.h"
 #include "afxdialogex.h"
+#include "RsPort.h"
 
 #ifdef _DEBUG
 #define M_PI 3.14159265358979323846
@@ -80,7 +81,24 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 	objData;
 
 	m_Pic.GetClientRect(&view);
+	/*
+	#define CBR_110             110
+	#define CBR_300             300
+	#define CBR_600             600
+	#define CBR_1200            1200
+	#define CBR_2400            2400
+	#define CBR_4800            4800
+	#define CBR_9600            9600
+	#define CBR_14400           14400
+	#define CBR_19200           19200
+	#define CBR_38400           38400
+	#define CBR_56000           56000
+	#define CBR_57600           57600
+	#define CBR_115200          115200
+	#define CBR_128000          128000
+	#define CBR_256000          256000
 
+	*/
 	// 보드레이트 콤보박스 초기화
 	m_BaudRate.AddString(_T("9600"));
 	m_BaudRate.AddString(_T("14400"));
@@ -88,7 +106,7 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 	m_BaudRate.AddString(_T("38400"));
 	m_BaudRate.AddString(_T("57600"));
 	m_BaudRate.AddString(_T("115200"));
-	m_BaudRate.SetCurSel(0); // 기본값 설정
+	m_BaudRate.SetCurSel(-1); // 기본값 설정
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -527,10 +545,15 @@ void CMFCEx02Dlg::OnBnClickedConnect()
 		AfxMessageBox(_T("No Baud Rate Selected"));
 		return;
 	}
+	
+	initComport(selComport);
+
 
 	CString strBaudRate;
 	m_BaudRate.GetLBText(selBaudRate, strBaudRate);
 	int baudRate = _ttoi(strBaudRate);
+	// 3. 시리얼 포트 설정 및 연결
+
 
 	/*
 	// 3. 시리얼 포트 설정 및 연결
