@@ -6,6 +6,7 @@
 #include "afxwin.h"
 #include "color.h"
 #include <vector>
+#include "RsPort.h"
 #define CENTER 310
 #define HALFLENGTH 298
 // CMFCEx02Dlg 대화 상자
@@ -38,9 +39,10 @@ public:
 	int count_R;
 	int count_C;
 	int count_T;
-	int selectedIndex = NULL; // 선택된 인덱스 변수 추가
+	int selectedIndex = NULL; 
 	int vCenterX;
 	int vCenterY;
+
 	CPoint start_Pos, end_Pos;
 	CString obj_Str;
 	CListCtrl m_List;
@@ -51,10 +53,16 @@ public:
 	CEdit center_Y;
 	CEdit size_X;
 	CEdit size_Y;
+	CEdit m_Send;
+	CEdit m_Receive;
 	CPoint CalculateCenter(const CPoint& start, const CPoint& end);
 	CPoint CalculateSize(const CPoint start, const CPoint end);
 	CPoint ReScale(CPoint point);
 	CComboBox m_Comport;
+	CComboBox m_BaudRate;
+
+	CRsPort g_RsPort;
+
 
 	struct ObjData
 	{
@@ -69,7 +77,11 @@ public:
 	};
 	std::vector<ObjData> objData;
 
-
+	void drawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
+	void drawRectangle(CDC* pDC, const CPoint& start, const CPoint& end);
+	void drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius);
+	void onDrawImage();
+	void getSerialPort();
 
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
@@ -79,13 +91,9 @@ public:
 	afx_msg void OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnStnClickedView();
 	afx_msg void OnCbnDropdownComport();
-
-	void drawShape(int type, CDC* pdc, CPoint sP, CPoint eP);
-	void drawRectangle(CDC* pDC, const CPoint& start, const CPoint& end);
-	void drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius);
-	void onDrawImage();
-	void getSerialPort();
 	afx_msg void OnCbnDropdownBaudRate();
-	CComboBox m_BaudRate;
 	afx_msg void OnBnClickedConnect();
+	afx_msg void OnBnClickedUnconnect();
+	afx_msg void OnBnClickedSend();
+	void OnReadComPort();
 };

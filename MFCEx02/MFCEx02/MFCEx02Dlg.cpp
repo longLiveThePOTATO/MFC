@@ -5,7 +5,6 @@
 #include "MFCEx02.h"
 #include "MFCEx02Dlg.h"
 #include "afxdialogex.h"
-#include "RsPort.h"
 
 #ifdef _DEBUG
 #define M_PI 3.14159265358979323846
@@ -14,6 +13,8 @@
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
+// RsPort 객체 정적 전역 변수 선언
+//CRsPort g_RsPort;
 
 // CMFCEx02Dlg 대화 상자
 
@@ -35,6 +36,8 @@ void CMFCEx02Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT4, size_Y);
 	DDX_Control(pDX, IDC_COMPORT, m_Comport);
 	DDX_Control(pDX, IDC_BAUDRATE, m_BaudRate);
+	DDX_Control(pDX, IDC_EDIT6, m_Receive);
+	DDX_Control(pDX, IDC_EDIT5, m_Send);
 }
 
 BEGIN_MESSAGE_MAP(CMFCEx02Dlg, CDialogEx)
@@ -51,6 +54,8 @@ BEGIN_MESSAGE_MAP(CMFCEx02Dlg, CDialogEx)
 	ON_CBN_DROPDOWN(IDC_COMPORT, &CMFCEx02Dlg::OnCbnDropdownComport)
 	ON_CBN_DROPDOWN(IDC_BAUDRATE, &CMFCEx02Dlg::OnCbnDropdownBaudRate)
 	ON_BN_CLICKED(IDC_CONNECT, &CMFCEx02Dlg::OnBnClickedConnect)
+	ON_BN_CLICKED(IDC_UNCONNECT, &CMFCEx02Dlg::OnBnClickedUnconnect)
+	ON_BN_CLICKED(IDC_SEND, &CMFCEx02Dlg::OnBnClickedSend)
 END_MESSAGE_MAP()
 
 // CMFCEx02Dlg 메시지 처리기
@@ -97,16 +102,18 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 	#define CBR_115200          115200
 	#define CBR_128000          128000
 	#define CBR_256000          256000
-
 	*/
 	// 보드레이트 콤보박스 초기화
 	m_BaudRate.AddString(_T("9600"));
 	m_BaudRate.AddString(_T("14400"));
 	m_BaudRate.AddString(_T("19200"));
 	m_BaudRate.AddString(_T("38400"));
+	m_BaudRate.AddString(_T("56000"));
 	m_BaudRate.AddString(_T("57600"));
 	m_BaudRate.AddString(_T("115200"));
-	m_BaudRate.SetCurSel(-1); // 기본값 설정
+	m_BaudRate.AddString(_T("256000"));
+	m_BaudRate.SetCurSel(0); // 기본값 설정
+
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -528,8 +535,6 @@ void CMFCEx02Dlg::OnCbnDropdownBaudRate()
 void CMFCEx02Dlg::OnBnClickedConnect()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
-
-	// 1. 선택된 COM 포트를 가져오기
 	int selComport = m_Comport.GetCurSel();
 	if (selComport == CB_ERR) {
 		AfxMessageBox(_T("No COM Port Selected"));
@@ -539,21 +544,28 @@ void CMFCEx02Dlg::OnBnClickedConnect()
 	CString strComport;
 	m_Comport.GetLBText(selComport, strComport);
 
-	// 2. 선택된 보드레이트 값을 가져오기
 	int selBaudRate = m_BaudRate.GetCurSel();
 	if (selBaudRate == CB_ERR) {
 		AfxMessageBox(_T("No Baud Rate Selected"));
 		return;
 	}
-	
-	initComport(selComport);
-
 
 	CString strBaudRate;
 	m_BaudRate.GetLBText(selBaudRate, strBaudRate);
 	int baudRate = _ttoi(strBaudRate);
-	// 3. 시리얼 포트 설정 및 연결
 
+	
+
+	// 3. 시리얼 포트 설정 및 연결
+	g_RsPort.initComport(strComport, baudRate);
+	if (g_RsPort.IsCommPortOpen()){
+	AfxMessageBox(_T("포트가 열렸습니다."));
+	}
+	else
+	{
+	AfxMessageBox(_T("WARNING : 포트를 여는데 실패하였습니다."));
+	}
+	
 
 	/*
 	// 3. 시리얼 포트 설정 및 연결
@@ -576,4 +588,31 @@ void CMFCEx02Dlg::OnBnClickedConnect()
 		AfxMessageBox(_T("Failed to Open Port"));
 	}
 	*/
+}
+
+
+void CMFCEx02Dlg::OnBnClickedUnconnect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+
+	g_RsPort.CloseCommPort();
+
+}
+
+
+void CMFCEx02Dlg::OnBnClickedSend()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+}
+
+
+
+
+void CMFCEx02Dlg::OnReadComPort()
+{
+	CString str_Receive = g_RsPort.ReadCommPort();
+
+	m_Receive.SetWindowTextW(str_Receive);
 }

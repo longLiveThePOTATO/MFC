@@ -15,33 +15,15 @@ static char THIS_FILE[]=__FILE__;
 // 생성자/소멸자
 //////////////////////////////////////////////////////////////////////
 
-// 기본 생성자 - 포트 이름을 받아 초기화
-CRsPort::CRsPort(CString m_portName)
-{
-   dcb_setup.BaudRate = CBR_19200;  // 통신 속도 설정 (19200 baud)
-   dcb_setup.ByteSize = 8;          // 데이터 비트 수 설정 (8 비트)
-   dcb_setup.Parity   = NOPARITY;   // 패리티 비트 없음
-   dcb_setup.StopBits = ONESTOPBIT; // 스톱 비트 설정 (1 비트)
-   initComport(m_portName);         // 포트 초기화 함수 호출
-}
-
 // 매개변수가 있는 생성자 - 포트 이름, 속도를 받아 초기화
-CRsPort::CRsPort(CString m_portName, DWORD BaudRate)
+//CRsPort::CRsPort(CString m_portName, DWORD BaudRate)
+CRsPort::CRsPort()
 {
-	dcb_setup.BaudRate = BaudRate;
+	//dcb_setup.BaudRate = BaudRate;
 	dcb_setup.ByteSize = 8;          // 데이터 비트 수 설정 (8 비트)
 	dcb_setup.Parity = NOPARITY;   // 패리티 비트 없음
 	dcb_setup.StopBits = ONESTOPBIT; // 스톱 비트 설정 (1 비트)
-	initComport(m_portName);
-}
-// 매개변수가 있는 생성자 - 포트 이름, 속도, 데이터 비트, 패리티, 스톱 비트를 받아 초기화
-CRsPort::CRsPort(CString m_portName, DWORD BaudRate, BYTE ByteSize, BYTE Parity, BYTE StopBits)
-{
-	dcb_setup.BaudRate = BaudRate;
-	dcb_setup.ByteSize = ByteSize;
-	dcb_setup.Parity = Parity;
-	dcb_setup.StopBits = StopBits;
-	initComport(m_portName);
+	//initComport(m_portName);
 }
 
 // 소멸자 - 포트를 닫는 함수 호출
@@ -51,7 +33,7 @@ CRsPort::~CRsPort()
 }
 
 // 포트 초기화 함수
-void CRsPort::initComport(CString m_portName)
+void CRsPort::initComport(CString m_portName, DWORD BaudRate)
 {
    COMMTIMEOUTS  commTimeOuts;  // 통신 시간 초과 설정 구조체
 
@@ -64,7 +46,7 @@ void CRsPort::initComport(CString m_portName)
    {
 		CloseHandle(m_idComDev);  // 핸들 닫기
 		m_Connect = FALSE;        // 연결 상태를 FALSE로 설정
-		// AfxMessageBox(_T("WARNING : 포트를 여는데 실패하였습니다."));
+		AfxMessageBox(_T("WARNING : 포트를 여는데 실패하였습니다."));
    }
    else
    {
@@ -141,38 +123,71 @@ int CRsPort::WriteCommPort(unsigned char *message, DWORD dwLength)
 }
 
 // 포트에서 데이터 읽기 함수
+#include <afxstr.h>   // CString을 사용하기 위한 헤더
+
+// 포트에서 데이터 읽기 함수
+CString CRsPort::ReadCommPort()
+{
+	COMSTAT  ComStat;           // 통신 상태 구조체
+	DWORD    dwErrorFlags;      // 오류 플래그
+	DWORD    dwLength;          // 데이터 길이
+	DWORD    dwReadLength = 0;  // 읽은 데이터 길이
+
+	// 연결 상태 체크
+	if (m_Connect == FALSE)
+		return _T("");  // 연결되어 있지 않으면 빈 문자열 반환
+
+	ClearCommError(m_idComDev, &dwErrorFlags, &ComStat);  // 통신 오류 플래그 초기화
+	dwLength = min((DWORD)50, ComStat.cbInQue);           // 읽을 데이터 길이 설정 (최대 50바이트)
+
+	char buffer[51];  // 데이터를 저장할 버퍼, 길이는 50 + null 종료 문자('\0')를 고려하여 51로 설정
+
+	if (ReadFile(m_idComDev, buffer, dwLength, &dwReadLength, &osRead))
+	{
+		buffer[dwReadLength] = '\0';  // null 종료 문자 추가
+		return CString(buffer);   // char 배열을 CString으로 변환하여 반환
+	}
+	else
+	{
+		return _T("");  // 실패 시 빈 문자열 반환
+	}
+}
+
+/*
 int CRsPort::ReadCommPort(unsigned char *message, DWORD length)
 {
-   COMSTAT  ComStat;           // 통신 상태 구조체
-   DWORD    dwErrorFlags;      // 오류 플래그
-   DWORD    dwLength;          // 데이터 길이
-   DWORD    dwReadLength = 0;  // 읽은 데이터 길이
+COMSTAT  ComStat;           // 통신 상태 구조체
+DWORD    dwErrorFlags;      // 오류 플래그
+DWORD    dwLength;          // 데이터 길이
+DWORD    dwReadLength = 0;  // 읽은 데이터 길이
 
-   CStringA strTemp;
-   strTemp.Format("%s", message);
+CStringA strTemp;
+strTemp.Format("%s", message);
 
-   if (m_Connect == FALSE)  return 0;  // 연결되어 있지 않으면 0 반환
-   else 
-   {
-	   ClearCommError(m_idComDev, &dwErrorFlags, &ComStat);  // 통신 오류 플래그 초기화
-	   dwLength = min((DWORD)length, ComStat.cbInQue);       // 읽을 데이터 길이 설정
-	   ReadFile(m_idComDev, message, dwLength, &dwReadLength, &osRead);  // 데이터 읽기
-   }
-
-   // 읽은 데이터가 없을 때
-   if (dwReadLength == 0)
-   {
-	   CStringA str;
-	   str.Format("%s", message);
-
-	   if (strTemp != str)
-	   {	   
-		   return str.GetLength();  // 읽은 데이터 길이 반환
-	   }	   
-   }
-  
-   return dwReadLength;  // 실제 읽은 데이터 길이 반환
+if (m_Connect == FALSE)  return 0;  // 연결되어 있지 않으면 0 반환
+else
+{
+ClearCommError(m_idComDev, &dwErrorFlags, &ComStat);  // 통신 오류 플래그 초기화
+dwLength = min((DWORD)length, ComStat.cbInQue);       // 읽을 데이터 길이 설정
+ReadFile(m_idComDev, message, dwLength, &dwReadLength, &osRead);  // 데이터 읽기
 }
+
+// 읽은 데이터가 없을 때
+if (dwReadLength == 0)
+{
+CStringA str;
+str.Format("%s", message);
+
+if (strTemp != str)
+{
+return str.GetLength();  // 읽은 데이터 길이 반환
+}
+}
+
+return dwReadLength;  // 실제 읽은 데이터 길이 반환
+}
+
+*/
 
 // 포트가 열려 있는지 확인하는 함수
 bool CRsPort::IsCommPortOpen()

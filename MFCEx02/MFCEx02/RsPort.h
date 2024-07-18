@@ -1,3 +1,5 @@
+// RsPort.h : 헤더 파일
+
 #pragma once
 // 제어 문자 정의
 #define NUL  0x00  // 널 문자
@@ -21,26 +23,6 @@ const int ERR_PORT_OPEN_FAIL = 1;  // 포트 열기 실패
 const int ERR_TIME_OUT = 2;        // 시간 초과 오류
 
 
-// 보드레이트 전역 변수 선언
-const int baudRates[] = {
-	CBR_110,
-	CBR_300,
-	CBR_600,
-	CBR_1200,
-	CBR_2400,
-	CBR_4800,
-	CBR_9600,
-	CBR_14400,
-	CBR_19200,
-	CBR_38400,
-	CBR_56000,
-	CBR_57600,
-	CBR_115200,
-	CBR_128000,
-	CBR_256000
-};
-
-const int numBaudRates = sizeof(baudRates) / sizeof(baudRates[0]);
 
 // CRsPort 클래스 선언
 class CRsPort
@@ -51,7 +33,8 @@ public:
 
 public:
 	// 포트에서 데이터 읽기 함수
-	int ReadCommPort(unsigned char *message, DWORD length);
+	CString ReadCommPort();
+	//int ReadCommPort(unsigned char *message, DWORD length);
 
 	// 포트에 데이터 쓰기 함수
 	int WriteCommPort(unsigned char* message, DWORD dwLength);
@@ -60,16 +43,13 @@ public:
 	bool IsCommPortOpen();
 
 	// 기본 생성자
-	CRsPort(CString m_portName);
-
-	// 매개변수가 있는 생성자
-	CRsPort(CString m_portName, DWORD BaudRate);
-	CRsPort(CString m_portName, DWORD BaudRate, BYTE ByteSize, BYTE Parity, BYTE StopBits);
+	CRsPort();
+	//CRsPort(CString m_portName, DWORD BaudRate);
 
 	// 소멸자
 	virtual ~CRsPort();
 
-protected:
+	
 	// 포트 닫기 함수
 	void CloseCommPort(void);
 
@@ -77,7 +57,9 @@ protected:
 	BOOL SetupConnection(void);
 
 	// 포트 초기화 함수
-	void initComport(CString m_portName);
+	void initComport(CString m_portName, DWORD baudRate);
+
+protected:
 
 	OVERLAPPED osWrite;  // 비동기 쓰기 연산에 사용되는 구조체
 	OVERLAPPED osRead;   // 비동기 읽기 연산에 사용되는 구조체
