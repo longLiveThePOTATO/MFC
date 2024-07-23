@@ -33,8 +33,13 @@ public:
 
 public:
 	// 포트에서 데이터 읽기 함수
+<<<<<<< HEAD
 	//CString ReadCommPort();
 	int ReadCommPort(char *message, DWORD length);
+=======
+	CString ReadCommPort();
+	//int ReadCommPort(unsigned char *message, DWORD length);
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff
 
 	// 포트에 데이터 쓰기 함수
 	int WriteCommPort(unsigned char* message, DWORD dwLength);

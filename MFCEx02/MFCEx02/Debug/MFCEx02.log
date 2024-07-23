@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿빌드 시작: 2024-07-19 오후 5:48:02
      1>2 노드의 "D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
@@ -10,6 +11,19 @@
      1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(452): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
          MFCEx02.cpp
          코드를 생성하고 있습니다...
+=======
+﻿빌드 시작: 2024-07-18 오후 6:09:12
+     1>2 노드의 "D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx02.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx02.cpp MFCEx02Dlg.cpp RsPort.cpp
+         RsPort.cpp
+         MFCEx02Dlg.cpp
+     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(258): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(450): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+         코드를 생성하고 있습니다...
+         건너뛰고 있습니다... (관련된 변경 내용 없음)
+         MFCEx02.cpp
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff
        ResourceCompile:
          C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0412" /IDebug\ /nologo /fo"Debug\MFCEx02.res" MFCEx02.rc 
        Link:
@@ -23,4 +37,8 @@
 
 빌드했습니다.
 
+<<<<<<< HEAD
 경과 시간: 00:00:02.14
+=======
+경과 시간: 00:00:00.62
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff

@@ -112,9 +112,13 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 	m_BaudRate.AddString(_T("57600"));
 	m_BaudRate.AddString(_T("115200"));
 	m_BaudRate.AddString(_T("256000"));
+<<<<<<< HEAD
 	m_BaudRate.SetCurSel(0);
 
 	m_Comport.SetCurSel(0);
+=======
+	m_BaudRate.SetCurSel(0); // 기본값 설정
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -606,6 +610,7 @@ void CMFCEx02Dlg::OnBnClickedUnconnect()
 void CMFCEx02Dlg::OnBnClickedSend()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+<<<<<<< HEAD
 	CString str_Send;
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(str_Send); // 컨트롤에서 텍스트 가져오기
 
@@ -688,3 +693,17 @@ static CString __PCharToCStringInUnicode(char* char_str)
 	delete[] wchar_str;
 	return cstring_str;
 }
+=======
+
+}
+
+
+
+
+void CMFCEx02Dlg::OnReadComPort()
+{
+	CString str_Receive = g_RsPort.ReadCommPort();
+
+	m_Receive.SetWindowTextW(str_Receive);
+}
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff

@@ -96,7 +96,10 @@ public:
 	afx_msg void OnBnClickedUnconnect();
 	afx_msg void OnBnClickedSend();
 	void OnReadComPort();
+<<<<<<< HEAD
 
 	static CString __PCharToCStringInUnicode(char* char_str);
 	static char* __CStringToPCharInUnicode(CString str);
+=======
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff
 };

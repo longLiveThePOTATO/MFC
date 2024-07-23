@@ -126,7 +126,10 @@ int CRsPort::WriteCommPort(unsigned char *message, DWORD dwLength)
 #include <afxstr.h>   // CString을 사용하기 위한 헤더
 
 // 포트에서 데이터 읽기 함수
+<<<<<<< HEAD
 /*
+=======
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff
 CString CRsPort::ReadCommPort()
 {
 	COMSTAT  ComStat;           // 통신 상태 구조체
@@ -153,6 +156,7 @@ CString CRsPort::ReadCommPort()
 		return _T("");  // 실패 시 빈 문자열 반환
 	}
 }
+<<<<<<< HEAD
 */
 
 int CRsPort::ReadCommPort(char *message, DWORD length)
@@ -192,6 +196,44 @@ int CRsPort::ReadCommPort(char *message, DWORD length)
 }
 
 
+=======
+
+/*
+int CRsPort::ReadCommPort(unsigned char *message, DWORD length)
+{
+COMSTAT  ComStat;           // 통신 상태 구조체
+DWORD    dwErrorFlags;      // 오류 플래그
+DWORD    dwLength;          // 데이터 길이
+DWORD    dwReadLength = 0;  // 읽은 데이터 길이
+
+CStringA strTemp;
+strTemp.Format("%s", message);
+
+if (m_Connect == FALSE)  return 0;  // 연결되어 있지 않으면 0 반환
+else
+{
+ClearCommError(m_idComDev, &dwErrorFlags, &ComStat);  // 통신 오류 플래그 초기화
+dwLength = min((DWORD)length, ComStat.cbInQue);       // 읽을 데이터 길이 설정
+ReadFile(m_idComDev, message, dwLength, &dwReadLength, &osRead);  // 데이터 읽기
+}
+
+// 읽은 데이터가 없을 때
+if (dwReadLength == 0)
+{
+CStringA str;
+str.Format("%s", message);
+
+if (strTemp != str)
+{
+return str.GetLength();  // 읽은 데이터 길이 반환
+}
+}
+
+return dwReadLength;  // 실제 읽은 데이터 길이 반환
+}
+
+*/
+>>>>>>> a403ade4f722a643b830640b5e263c83868067ff
 
 // 포트가 열려 있는지 확인하는 함수
 bool CRsPort::IsCommPortOpen()
