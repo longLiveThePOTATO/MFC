@@ -1,0 +1,26 @@
+﻿빌드 시작: 2024-07-19 오후 5:48:02
+     1>2 노드의 "D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\MFCEx02.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx02.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx02.cpp MFCEx02Dlg.cpp RsPort.cpp
+         RsPort.cpp
+         MFCEx02Dlg.cpp
+     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(260): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+     1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(452): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+         MFCEx02.cpp
+         코드를 생성하고 있습니다...
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0412" /IDebug\ /nologo /fo"Debug\MFCEx02.res" MFCEx02.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\MFC\MFCEx02\Debug\MFCEx02.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\MFC\MFCEx02\Debug\MFCEx02.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\MFC\MFCEx02\Debug\MFCEx02.lib" /MACHINE:X86 Debug\MFCEx02.res
+         Debug\MFCEx02.obj
+         Debug\MFCEx02Dlg.obj
+         Debug\RsPort.obj
+         Debug\stdafx.obj
+         MFCEx02.vcxproj -> D:\MFC\MFCEx02\Debug\MFCEx02.exe
+     1>"D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:02.14
