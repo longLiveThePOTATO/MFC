@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "MFCEx02.h"
 #include "MFCEx02Dlg.h"
-#include "afxdialogex.h"
+
 
 #ifdef _DEBUG
 #define M_PI 3.14159265358979323846
@@ -12,9 +12,6 @@
 #endif
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
-
-// RsPort 객체 정적 전역 변수 선언
-//CRsPort g_RsPort;
 
 // CMFCEx02Dlg 대화 상자
 
@@ -28,7 +25,6 @@ void CMFCEx02Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST, m_List);
-	// DDX_Control(pDX, IDC_View, m_PictureControl);
 	DDX_Control(pDX, IDC_View, m_Pic);
 	DDX_Control(pDX, IDC_EDIT1, center_X);
 	DDX_Control(pDX, IDC_EDIT2, center_Y);
@@ -36,8 +32,8 @@ void CMFCEx02Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT4, size_Y);
 	DDX_Control(pDX, IDC_COMPORT, m_Comport);
 	DDX_Control(pDX, IDC_BAUDRATE, m_BaudRate);
-	DDX_Control(pDX, IDC_EDIT6, m_Receive);
 	DDX_Control(pDX, IDC_EDIT5, m_Send);
+	DDX_Control(pDX, IDC_EDIT6, m_Receive);
 }
 
 BEGIN_MESSAGE_MAP(CMFCEx02Dlg, CDialogEx)
@@ -50,12 +46,13 @@ BEGIN_MESSAGE_MAP(CMFCEx02Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_AddC, &CMFCEx02Dlg::OnBtnClickedAddC)
 	ON_BN_CLICKED(IDC_DEL, &CMFCEx02Dlg::OnBnClickedDel)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, &CMFCEx02Dlg::OnLvnItemchangedList)
-	//ON_STN_CLICKED(IDC_View, &CMFCEx02Dlg::OnStnClickedView)
 	ON_CBN_DROPDOWN(IDC_COMPORT, &CMFCEx02Dlg::OnCbnDropdownComport)
 	ON_CBN_DROPDOWN(IDC_BAUDRATE, &CMFCEx02Dlg::OnCbnDropdownBaudRate)
 	ON_BN_CLICKED(IDC_CONNECT, &CMFCEx02Dlg::OnBnClickedConnect)
 	ON_BN_CLICKED(IDC_UNCONNECT, &CMFCEx02Dlg::OnBnClickedUnconnect)
 	ON_BN_CLICKED(IDC_SEND, &CMFCEx02Dlg::OnBnClickedSend)
+	//ON_MESSAGE(WM_RECEIVED_COMM, &CMFCEx02Dlg::OnReadComport)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CMFCEx02Dlg 메시지 처리기
@@ -66,7 +63,6 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 
 	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
 
-	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 
@@ -86,41 +82,45 @@ BOOL CMFCEx02Dlg::OnInitDialog()
 	objData;
 
 	m_Pic.GetClientRect(&view);
-	/*
-	#define CBR_110             110
-	#define CBR_300             300
-	#define CBR_600             600
-	#define CBR_1200            1200
-	#define CBR_2400            2400
-	#define CBR_4800            4800
-	#define CBR_9600            9600
-	#define CBR_14400           14400
-	#define CBR_19200           19200
-	#define CBR_38400           38400
-	#define CBR_56000           56000
-	#define CBR_57600           57600
-	#define CBR_115200          115200
-	#define CBR_128000          128000
-	#define CBR_256000          256000
-	*/
 	// 보드레이트 콤보박스 초기화
-	m_BaudRate.AddString(_T("9600"));
-	m_BaudRate.AddString(_T("14400"));
-	m_BaudRate.AddString(_T("19200"));
-	m_BaudRate.AddString(_T("38400"));
-	m_BaudRate.AddString(_T("56000"));
-	m_BaudRate.AddString(_T("57600"));
-	m_BaudRate.AddString(_T("115200"));
-	m_BaudRate.AddString(_T("256000"));
-<<<<<<< HEAD
+	m_BaudRate.AddString(_T("B50"));
+	m_BaudRate.AddString(_T("B75"));
+	m_BaudRate.AddString(_T("B110"));
+	m_BaudRate.AddString(_T("B134"));
+	m_BaudRate.AddString(_T("B150"));
+	m_BaudRate.AddString(_T("B300"));
+	m_BaudRate.AddString(_T("B600"));
+	m_BaudRate.AddString(_T("B1200"));
+	m_BaudRate.AddString(_T("B1800"));
+	m_BaudRate.AddString(_T("B2400"));
+	m_BaudRate.AddString(_T("B4800"));
+	m_BaudRate.AddString(_T("B7200"));
+	m_BaudRate.AddString(_T("B9600"));
+	m_BaudRate.AddString(_T("B19200"));
+	m_BaudRate.AddString(_T("B38400"));
+	m_BaudRate.AddString(_T("B57600"));
+	m_BaudRate.AddString(_T("B115200"));
+	m_BaudRate.AddString(_T("B230400"));
+	m_BaudRate.AddString(_T("B230400"));
+	m_BaudRate.AddString(_T("B460800"));
+	m_BaudRate.AddString(_T("B921600"));
 	m_BaudRate.SetCurSel(0);
 
+	m_Comport.AddString(_T("COM1"));
+	m_Comport.AddString(_T("COM2"));
+	m_Comport.AddString(_T("COM3"));
+	m_Comport.AddString(_T("COM4"));
+	m_Comport.AddString(_T("COM5"));
+	m_Comport.AddString(_T("COM6"));
+	m_Comport.AddString(_T("COM7"));
+	m_Comport.AddString(_T("COM8"));
+	m_Comport.AddString(_T("COM9"));
 	m_Comport.SetCurSel(0);
-=======
-	m_BaudRate.SetCurSel(0); // 기본값 설정
->>>>>>> a403ade4f722a643b830640b5e263c83868067ff
 
+	g_hWnd = GetSafeHwnd();
 
+	// 타이머 설정
+	SetTimer(TIMER_ID, TIMER_INTERVAL, NULL);
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -190,49 +190,44 @@ void CMFCEx02Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CString str;
 	start_Pos = CPoint(point.x - 12, point.y - 12);
-	/*
-		str.Format(_T("%d"), start_Pos.x);
-		center_X.SetWindowText(str);
-		str.Format(_T("%d"), start_Pos.y);
-		center_Y.SetWindowText(str);*/
-
 }
 
 void CMFCEx02Dlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CDialogEx::OnLButtonUp(nFlags, point);
 	point = CPoint(point.x - 12, point.y - 12);
-	end_Pos = point;
-
 	CStatic* pStatic = (CStatic*)GetDlgItem(IDC_View);
 	CRgn rgn;
 	rgn.CreateRectRgn(view.left, view.top, view.right, view.bottom);
 
 	UpdateData();
-	if (view.PtInRect(point) && view.PtInRect(start_Pos)) {
+	if (view.PtInRect(point) && view.PtInRect(start_Pos)) {	
+		CFPoint startPoint(start_Pos);  // CPoint를 CFPoint로 변환
+		CFPoint endPoint(point);        // CPoint를 CFPoint로 변환
+		CFPoint center;
+		center = center.CalculateCenter(startPoint, endPoint).Offset(HALFLENGTH*(-1), HALFLENGTH*(-1));
+		center = Scale(center);
+		CFPoint size;
+		size = Scale(startPoint.DistancePairTo(endPoint));
 		switch (obj_Type)
 		{
 		case 1:
 			count_R++;  // 사각형 개수 증가
-			obj_Str.Format(_T("Rect %d"), count_R);				// 사각형 이름 설정
-			objData.emplace_back(1, start_Pos, point, false);	// 객체 데이터 저장
-			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// 리스트에 객체 추가
+			obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
+			objData.emplace_back(1, center, size, false);  // 객체 데이터 저장
+			m_List.InsertItem(m_List.GetItemCount(), obj_Str);  // 리스트에 객체 추가
 			break;
 		case 2:
-		{
 			count_C++;  // 원 개수 증가
-			obj_Str.Format(_T("Circle %d"), count_C);			// 원 이름 설정
-			objData.emplace_back(2, start_Pos, point, false);	// 객체 데이터 저장
-			m_List.InsertItem(m_List.GetItemCount(), obj_Str);				// 리스트에 객체 추가
+			obj_Str.Format(_T("Circle %d"), count_C);  // 원 이름 설정
+			objData.emplace_back(2, center, size, false);  // 객체 데이터 저장
+			m_List.InsertItem(m_List.GetItemCount(), obj_Str);  // 리스트에 객체 추가
 			break;
-
-		}
 		default:
 			break;
 		}
 		//Invalidate();
 		onDrawImage();
-
 	}
 }
 
@@ -281,7 +276,7 @@ void CMFCEx02Dlg::OnBnClickedDel()
 
 void CMFCEx02Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// Get the selected item index
+	// 선택된 항목의 인덱스를 호출
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	POSITION pos = m_List.GetFirstSelectedItemPosition();
 	if (pos == NULL)
@@ -293,20 +288,20 @@ void CMFCEx02Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	else
 	{
-		while (pos)
+		do
 		{
 			selectedIndex = m_List.GetNextSelectedItem(pos);
 			CString str;
 			objData[selectedIndex].bSelect = true;
-			CPoint sP = objData[selectedIndex].sP;
-			CPoint eP = objData[selectedIndex].eP;
-			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).x));
+			CFPoint center = objData[selectedIndex].cP;
+			CFPoint sizeP = objData[selectedIndex].size;
+			str.Format(_T("%f"),center.x);
 			center_X.SetWindowText(str);
-			str.Format(_T("%d"), ReScale(CalculateCenter(sP, eP).y*(-1)));
+			str.Format(_T("%f"), center.y);
 			center_Y.SetWindowText(str);
-			str.Format(_T("%d"), ReScale(CalculateSize(sP, eP).x));
+			str.Format(_T("%f"), sizeP.x);
 			size_X.SetWindowText(str);
-			str.Format(_T("%d"), ReScale(CalculateSize(sP, eP).y));
+			str.Format(_T("%f"), sizeP.y);
 			size_Y.SetWindowText(str);
 			for (int i = 0; i < (int)objData.size(); i++)
 			{
@@ -319,35 +314,40 @@ void CMFCEx02Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 					continue;
 				}
 			}
-			//Invalidate();
 			onDrawImage();
-		}
+		} while (pos);
 	}
 	obj_Type = 0;
 	*pResult = 0;
 }
 
-CPoint CMFCEx02Dlg::CalculateCenter(const CPoint& start, const CPoint& end)
+// 스케일링 함수
+CFPoint CMFCEx02Dlg::Scale(const CFPoint& point)
 {
-	int centerX = (start.x + end.x) / 2 - HALFLENGTH;
-	int centerY = (start.y + end.y) / 2 - HALFLENGTH;
+	// 스케일링 연산
+	CFPoint scaledPoint(
+		point.x * 100.0f / view.Width(),
+		point.y * (-100.0f) / view.Height()
+		);
 
-	return CPoint(centerX, centerY);
+	// 소수점 세 자리로 반올림
+	return scaledPoint.RoundToThreeDecimalPlaces(scaledPoint);
 }
 
-CPoint CMFCEx02Dlg::CalculateSize(const CPoint start, const CPoint end)
+// 리스케일링 함수
+CFPoint CMFCEx02Dlg::ReScale(const CFPoint& point)
 {
-	int sizeX = std::abs(start.x - end.x);
-	int sizeY = std::abs(start.y - end.y);
-	return CPoint(sizeX, sizeY);
+	// 리스케일링 연산
+	CFPoint rescaledPoint(
+		point.x / 100.0f * view.Width(),
+		point.y / (-100.0f) * view.Height()
+		);
+
+	// 소수점 세 자리로 반올림
+	return rescaledPoint.RoundToThreeDecimalPlaces(rescaledPoint);
 }
 
-CPoint CMFCEx02Dlg::ReScale(CPoint point)
-{
-	return CPoint(point.x * 100 / view.Width(), point.y * 100 / view.Height());
-}
-
-void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radius)
+void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CFPoint& center, const CFPoint& size)
 {
 	// 타원을 360도로 나누어 점을 찍음
 	for (int angle = 0; angle < 361; angle++)
@@ -355,8 +355,9 @@ void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radi
 		// 각도를 라디안으로 변환
 		double radians = angle * M_PI / 180.0;
 
-		int x = center.x + (int)(radius.x * cos(radians) / 2);
-		int y = center.y - (int)(radius.y * sin(radians) / 2);
+		// 타원의 방정식을 사용하여 좌표 계산
+		int x = center.x + (int)(size.x * cos(radians) / 2);
+		int y = center.y - (int)(size.y * sin(radians) / 2);
 
 		if (angle == 0) {
 			pDC->MoveTo(x, y);
@@ -367,37 +368,43 @@ void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CPoint& center, const CPoint& radi
 	}
 }
 
-void CMFCEx02Dlg::drawRectangle(CDC* pDC, const CPoint& start, const CPoint& end)
+
+void CMFCEx02Dlg::drawRectangle(CDC* pDC, const CFPoint& center, const CFPoint& size)
 {
-	pDC->MoveTo(start);
-	pDC->LineTo(start.x, end.y);
-	pDC->LineTo(end.x, end.y);
-	pDC->LineTo(end.x, start.y);
-	pDC->LineTo(start);
+	// 사각형의 각 좌표를 계산
+	int left = center.x - (int)(size.x / 2);
+	int top = center.y - (int)(size.y / 2);
+	int right = center.x + (int)(size.x / 2);
+	int bottom = center.y + (int)(size.y / 2);
 
-
+	// 사각형 그리기
+	pDC->MoveTo(left, top);
+	pDC->LineTo(left, bottom);
+	pDC->LineTo(right, bottom);
+	pDC->LineTo(right, top);
+	pDC->LineTo(left, top);
 }
 
-void CMFCEx02Dlg::drawShape(int type, CDC* pDC, CPoint sP, CPoint eP)
+void CMFCEx02Dlg::drawShape(int type, CDC* pDC, const CFPoint& center, const CFPoint& size)
 {
+	CFPoint scaledSize = ReScale(size);
+	CFPoint offsetCenter = ReScale(center).Offset(HALFLENGTH, HALFLENGTH);
+
 	switch (type)
 	{
 	case 1:
-		drawRectangle(pDC, sP, eP);
+		// 사각형 그리기
+		drawRectangle(pDC, offsetCenter, scaledSize);
 		break;
 	case 2:
-	{
-		CPoint radius = CalculateSize(sP, eP);
-		CPoint center = CalculateCenter(sP, eP);
-		center.x += HALFLENGTH;
-		center.y += HALFLENGTH;
-		drawEllipse(pDC, center, radius);
-	}
-	break;
+		// 타원 그리기
+		drawEllipse(pDC, offsetCenter, scaledSize);
+		break;
 	default:
 		break;
 	}
 }
+
 
 void CMFCEx02Dlg::onDrawImage()
 {
@@ -421,7 +428,6 @@ void CMFCEx02Dlg::onDrawImage()
 	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
 
 	// 임시 버퍼(memDC)에 그리기 작업 수행
-	// memDC.FillSolidRect(view, RGB(0, 0, 0)); // 검은색 배경
 
 	// 흰색 사각형 그리기
 	CBrush whiteBrush(WHITE); // 흰색 브러시 생성
@@ -458,7 +464,7 @@ void CMFCEx02Dlg::onDrawImage()
 		if (!objData[i].bSelect)
 		{
 			// 기본 펜으로 그리기
-			drawShape(objData[i].type, &memDC, objData[i].sP, objData[i].eP);
+			drawShape(objData[i].type, &memDC, objData[i].cP, objData[i].size);
 		}
 		else
 		{
@@ -472,7 +478,7 @@ void CMFCEx02Dlg::onDrawImage()
 		CPen red_pen(PS_SOLID, 2, LIGHTRED);
 		CPen* pOldPenTemp = memDC.SelectObject(&red_pen);
 
-		drawShape(objData[sIndex].type, &memDC, objData[sIndex].sP, objData[sIndex].eP);
+		drawShape(objData[sIndex].type, &memDC, objData[sIndex].cP, objData[sIndex].size);
 
 		// 원래 펜으로 복원
 		memDC.SelectObject(pOldPenTemp);
@@ -533,11 +539,38 @@ void CMFCEx02Dlg::OnCbnDropdownBaudRate()
 	m_BaudRate.GetLBText(sel, strBaudRate);
 	int baudRate = _ttoi(strBaudRate);
 
-	// TODO: 선택된 보드레이트를 사용하여 시리얼 통신 설정
-	// 예: SetBaudRate(baudRate);
 }
 
+// 콤보박스 선택 인덱스를 통해 BAUD rate 값을 매핑하는 함수
+long CMFCEx02Dlg::GetBaudRate(int index)
+{
+	switch (index)
+	{
+	case 0: return B50;
+	case 1: return B75;
+	case 2: return B110;
+	case 3: return B134;
+	case 4: return B150;
+	case 5: return B300;
+	case 6: return B600;
+	case 7: return B1200;
+	case 8: return B1800;
+	case 9: return B2400;
+	case 10: return B4800;
+	case 11: return B7200;
+	case 12: return B9600;
+	case 13: return B19200;
+	case 14: return B38400;
+	case 15: return B57600;
+	case 16: return B115200;
+	case 17: return B230400;
+	case 18: return B460800;
+	case 19: return B921600;
+	default: return false; // 기본값으로 설정
+	}
+}
 
+// 콤보박스 선택 인덱스를 기반으로 COpen 함수 호출
 void CMFCEx02Dlg::OnBnClickedConnect()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
@@ -547,8 +580,8 @@ void CMFCEx02Dlg::OnBnClickedConnect()
 		return;
 	}
 
-	CString strComport;
-	m_Comport.GetLBText(selComport, strComport);
+	// ComboBox에서 선택한 항목이 0부터 시작하므로 1을 더해 실제 포트 번호로 사용합니다.
+	short port = selComport + 1;
 
 	int selBaudRate = m_BaudRate.GetCurSel();
 	if (selBaudRate == CB_ERR) {
@@ -556,154 +589,160 @@ void CMFCEx02Dlg::OnBnClickedConnect()
 		return;
 	}
 
-	CString strBaudRate;
-	m_BaudRate.GetLBText(selBaudRate, strBaudRate);
-	int baudRate = _ttoi(strBaudRate);
+	long baudRate = GetBaudRate(selBaudRate);
+	int mode = BIT_8 | STOP_1 | P_NONE;
+	char irq = 'E'; // 이벤트 기반 인터럽트
+	BOOL bEvent = TRUE; // 이벤트 사용
 
-	
-
-	// 3. 시리얼 포트 설정 및 연결
-	g_RsPort.initComport(strComport, baudRate);
-	if (g_RsPort.IsCommPortOpen()){
-	AfxMessageBox(_T("포트가 열렸습니다."));
-	}
-	else
-	{
-	AfxMessageBox(_T("WARNING : 포트를 여는데 실패하였습니다."));
-	}
-	
-
-	/*
-	// 3. 시리얼 포트 설정 및 연결
-	if (m_serialPort.OpenPort(strComport)) {
-		if (m_serialPort.ConfigurePort(baudRate, 8, NOPARITY, ONESTOPBIT)) {
-			if (m_serialPort.StartCommunication()) {
-				AfxMessageBox(_T("Connected Successfully"));
-			}
-			else {
-				AfxMessageBox(_T("Failed to Start Communication"));
-				m_serialPort.ClosePort();
-			}
-		}
-		else {
-			AfxMessageBox(_T("Failed to Configure Port"));
-			m_serialPort.ClosePort();
-		}
-	}
-	else {
-		AfxMessageBox(_T("Failed to Open Port"));
-	}
-	*/
+	if (g_Comm.COpen(this->m_hWnd, port, baudRate, mode, irq, bEvent)) {
+        AfxMessageBox(_T("Connected successfully"));
+    } else {
+        AfxMessageBox(_T("Failed to open COM port"));
+    }
 }
-
 
 void CMFCEx02Dlg::OnBnClickedUnconnect()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
-
-	g_RsPort.CloseCommPort();
-
+	g_Comm.CClose();
 }
 
 
 void CMFCEx02Dlg::OnBnClickedSend()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-<<<<<<< HEAD
 	CString str_Send;
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(str_Send); // 컨트롤에서 텍스트 가져오기
-
-	// CString에서 문자열 길이 가져오기
-	DWORD dwLength = str_Send.GetLength()*2;
-
-	// CString을 unsigned char*로 변환
-	unsigned char* p_str = reinterpret_cast<unsigned char*>(str_Send.GetBuffer());
-
-	// 데이터 전송
-	g_RsPort.WriteCommPort(p_str, dwLength);
-
-	// 버퍼 해제
-	str_Send.ReleaseBuffer();
+	
+	g_Comm.CWrite(str_Send);
 }
 
-
-void CMFCEx02Dlg::OnReadComPort()
+void CMFCEx02Dlg::OnTimer(UINT_PTR nIDEvent)
 {
-	char buffer[1024] = { 0 }; // 적절한 크기의 버퍼 할당
-	int bytesRead = g_RsPort.ReadCommPort(buffer, sizeof(buffer) - 1);
-
-	if (bytesRead > 0)
+	if (nIDEvent == TIMER_ID&&g_Comm.CommCheck())
 	{
-		buffer[bytesRead] = '\0'; // 널 종료 문자 추가
-		CString str_Receive = __PCharToCStringInUnicode(buffer);
+		OnReadComPort(); // 타이머 이벤트 발생 시 시리얼 포트 데이터 읽기
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+void CMFCEx02Dlg::OnDestroy()
+{
+	KillTimer(TIMER_ID); // 타이머 해제
+	CDialogEx::OnDestroy();
+}
+
+/*std::vector<CString> split(const CString& s, const CString& delimiter) {
+	std::vector<CString> tokens;
+	int start = 0;
+	CString token = s.Tokenize(delimiter, start);
+
+	while (token != _T("")) {
+		tokens.push_back(token);
+		token = s.Tokenize(delimiter, start);
+	}
+	return tokens;
+}
+*/
+
+
+void CMFCEx02Dlg::OnReadComPort(){
+	CString str_Receive;
+	if (g_Comm.CRead(str_Receive)) {
 		m_Receive.SetWindowTextW(str_Receive);
+	}
+
+/*	std::vector<CString> tokens = split(str_Receive, _T(";"));
+
+	if (!tokens.empty() && tokens[0] == _T("S")) {
+		if (tokens.size() < 2) { // 커맨드가 존재하는지 확인
+			AfxMessageBox(_T("Invalid command format: missing command"));
+			return;
+		}
+		CString cmdStr = tokens[1]; // 두 번째 토큰을 커맨드로 설정
+
+//		Command cmd = stringToCommand(cmdStr); // 커맨드를 enum으로 변환
+
+	}*/
+}
+/*
+afx_msg LRESULT CMFCEx02Dlg::OnReadComport(WPARAM wParam, LPARAM lParam)
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CString str_Receive;
+	if (g_Comm.CRead(str_Receive)) {
+		m_Receive.SetWindowTextW(str_Receive);
+	}
+	else {
+		AfxMessageBox(_T("Failed to read from comm port"));
+	}
+	return 0;
+}
+*/
+
+std::vector<CString> CMFCEx02Dlg::split(const CString& s) {
+	std::vector<CString> tokens;
+	int start = 0;
+	int end = s.Find(delimiter);
+
+	// 구분자가 문자열에 존재하는 동안 반복
+	while (end != -1) {
+		tokens.push_back(s.Mid(start, end - start));
+		start = end + delimiter.GetLength();
+		end = s.Find(delimiter, start);
+	}
+
+	// 마지막 토큰 추가
+	tokens.push_back(s.Mid(start));
+
+	return tokens;
+}
+
+// 문자열을 Command enum으로 변환하는 함수
+CMFCEx02Dlg::Command CMFCEx02Dlg::StringToCommand(const CString& commandStr) {
+	auto it = commandMap.find(commandStr);
+	if (it != commandMap.end()) {
+		return it->second;
+	}
+	return INVALID;
+}
+
+int CMFCEx02Dlg::CommandProcs(const CString& s)
+{
+	std::vector<CString> tokens = split(s);
+
+	// 첫 번째 토큰이 "S"인지 확인
+	if (!tokens.empty() && tokens[0] == _T("S")) {
+		// 커맨드가 존재하는지 확인
+		if (tokens.size() < 2) {
+			AfxMessageBox(_T("Invalid command format: missing command"));
+			return 0;
+		}
+
+		// 두 번째 토큰을 커맨드로 설정
+		CString cmdStr = tokens[1];
+		// 커맨드를 enum으로 변환
+		Command cmd = StringToCommand(cmdStr);
+
+		// 커맨드에 따라 처리
+		switch (cmd) {
+		case ADD:
+			return 1;
+
+		}
+	}
+	else {
+		AfxMessageBox(_T("Invalid message format: missing S"));
+		Response(0);
 	}
 }
 
 
-CString CMFCEx02Dlg::__PCharToCStringInUnicode(char* char_str)
+void CMFCEx02Dlg::Response(int s_f)
 {
-	wchar_t* wchar_str = NULL;
-	CString cstring_str;
-	int char_str_len = 0;
-
-	// 멀티바이트 문자열(char*)을 유니코드 문자열(wchar_t*)로 변환하기 위한 길이 계산
-	char_str_len = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, char_str, -1, NULL, NULL);
-	wchar_str = new wchar_t[char_str_len + 1]; // 변환된 유니코드 문자열을 저장할 메모리 할당
-	MultiByteToWideChar(CP_ACP, 0, char_str, -1, wchar_str, char_str_len); // 변환 수행
-
-	wchar_str[char_str_len] = _T('\0'); // 널 종료 문자 추가
-	cstring_str.Format(_T("%s"), wchar_str); // CString에 유니코드 문자열 설정
-	delete[] wchar_str; // 할당된 메모리 해제
-	return cstring_str;
+	CString str_Response = _T("Fail");
+	if (s_f == 1)	str_Response = _T("Success");
+	m_Send.SetWindowTextW(str_Response);
+	g_Comm.CWrite(str_Response);
 }
-
-
-static char* __CStringToPCharInUnicode(CString str)
-{
-	wchar_t* wchar_str = NULL;
-	char*    char_str = NULL;
-	int      char_str_len = 0;
-
-	wchar_str = str.GetBuffer(str.GetLength()); // CString 내부의 유니코드 버퍼 가져오기
-	str.ReleaseBuffer(); // CString 버퍼 해제
-
-	// 유니코드 문자열(wchar_t*)을 멀티바이트 문자열(char*)로 변환하기 위한 길이 계산
-	char_str_len = WideCharToMultiByte(CP_ACP, 0, wchar_str, -1, NULL, 0, NULL, NULL);
-	char_str = new char[char_str_len + 1]; // 변환된 문자열을 저장할 메모리 할당
-	WideCharToMultiByte(CP_ACP, 0, wchar_str, -1, char_str, char_str_len, 0, 0); // 변환 수행
-
-	char_str[char_str_len] = '\0'; // 널 종료 문자 추가
-	return char_str;
-}
-
-static CString __PCharToCStringInUnicode(char* char_str)
-{
-	wchar_t* wchar_str = NULL;
-	CString  cstring_str;
-	int      char_str_len = 0;
-
-	char_str_len = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, char_str, -1, NULL, NULL);
-	wchar_str = new wchar_t[char_str_len + 1];
-	MultiByteToWideChar(CP_ACP, 0, char_str, -1, wchar_str, char_str_len);
-
-	wchar_str[char_str_len] = _T('\0');
-	cstring_str.Format(_T("%s"), wchar_str);
-	delete[] wchar_str;
-	return cstring_str;
-}
-=======
-
-}
-
-
-
-
-void CMFCEx02Dlg::OnReadComPort()
-{
-	CString str_Receive = g_RsPort.ReadCommPort();
-
-	m_Receive.SetWindowTextW(str_Receive);
-}
->>>>>>> a403ade4f722a643b830640b5e263c83868067ff

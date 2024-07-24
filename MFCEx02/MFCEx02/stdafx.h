@@ -22,6 +22,8 @@
 
 
 
+// 커스텀 메시지 정의
+#define WM_RECEIVED_COMM WM_USER + 1
 
 #ifndef _AFX_NO_OLE_SUPPORT
 #include <afxdtctl.h>           // Internet Explorer 4 공용 컨트롤에 대한 MFC 지원입니다.
