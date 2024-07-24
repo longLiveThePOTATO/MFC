@@ -12,6 +12,7 @@ public:
 	// 매개변수가 있는 생성자
 	CFPoint(float x, float y);
 	CFPoint(const CPoint& point);
+	CFPoint(const CString& xStr, const CString& yStr);
 
 	// 연산자 오버로딩
 	CFPoint operator+(const CFPoint& other) const;

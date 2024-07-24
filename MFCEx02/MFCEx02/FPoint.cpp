@@ -12,6 +12,13 @@ CFPoint::CFPoint(float x, float y) : x(x), y(y) {}
 // CPoint를 CFPoint로 변환하는 생성자
 CFPoint::CFPoint(const CPoint& point) : x(static_cast<float>(point.x)), y(static_cast<float>(point.y)) {}
 
+// CString 쌍을 CFPoint로 변환하는 생성자
+CFPoint::CFPoint(const CString& xStr, const CString& yStr) {
+	// CString을 float으로 변환
+	x = static_cast<float>(std::atof(CT2CA(xStr)));
+	y = static_cast<float>(std::atof(CT2CA(yStr)));
+}
+
 // 소수점 세 자리로 반올림하는 함수
 CFPoint CFPoint::RoundToThreeDecimalPlaces(CFPoint point) const {
 	point.x = std::round(point.x * 1000.0f) / 1000.0f;
@@ -69,8 +76,5 @@ CFPoint CFPoint::Offset(float dx, float dy) const {
 CFPoint CFPoint::CalculateCenter(const CFPoint& start, const CFPoint& end) {
 	float centerX = (start.x + end.x) / 2.0f;
 	float centerY = (start.y + end.y) / 2.0f;
-	std::cout << "CalculateCenter - startX: " << start.x << ", startY: " << start.y
-		<< ", endX: " << end.x << ", endY: " << end.y
-		<< ", centerX: " << centerX << ", centerY: " << centerY << std::endl;
 	return CFPoint(centerX, centerY);
 }

@@ -1,6 +1,4 @@
-
 // MFCEx02Dlg.h : 헤더 파일
-//
 
 #pragma once
 #include "afxwin.h"
@@ -12,20 +10,22 @@
 
 #define TIMER_ID 1
 #define TIMER_INTERVAL 100 // 100ms마다 타이머 이벤트 발생
+enum Command {
+	ADD, DEL, GETCOUNT, GETOBJ, INVALID
+};
 
 // CMFCEx02Dlg 대화 상자
 class CMFCEx02Dlg : public CDialogEx
 {
 	// 생성입니다.
 public:
-	CMFCEx02Dlg(CWnd* pParent = NULL);	// 표준 생성자입니다.
+	CMFCEx02Dlg(CWnd* pParent = NULL);    // 표준 생성자입니다.
 
 	// 대화 상자 데이터입니다.
 	enum { IDD = IDD_MFCEX02_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
 	// 구현입니다.
 protected:
@@ -40,45 +40,32 @@ protected:
 	//afx_msg LRESULT OnReadComport(WPARAM wParam, LPARAM lParam);
 
 public:
-	int obj_Type;
-	int count_R;
-	int count_C;
-	int count_T;
-	int selectedIndex = NULL; 
-	int vCenterX;
-	int vCenterY;
-
-	CPoint start_Pos;
-	CString obj_Str;
-	CListCtrl m_List;
-	CBrush m_Brush;
-	CStatic m_Pic;
-	CRect view;
+	// 초기화 및 설정
+	CComboBox m_Comport;
+	CComboBox m_BaudRate;
 	CEdit center_X;
 	CEdit center_Y;
 	CEdit size_X;
 	CEdit size_Y;
 	CEdit m_Send;
 	CEdit m_Receive;
-	CFPoint Scale(const CFPoint& point);
-	CFPoint ReScale(const CFPoint& point);
-	CComboBox m_Comport;
-	CComboBox m_BaudRate;
+	CStatic m_Pic;
+	CListCtrl m_List;
+	CBrush m_Brush;
 
-	Comm g_Comm;
-	
-	enum Command {
-		ADD, DEL, GETCOUNT, GETOBJ, INVALID
-	};
+	int obj_Type;
+	int count_R;
+	int count_C;
+	int count_T;
+	int selectedIndex = NULL;
+	int vCenterX;
+	int vCenterY;
 
-	Command StringToCommand(const CString& commandStr);
-	std::vector<CString> split(const CString& s);
-	std::map<CString, Command> commandMap;
-	CString delimiter = _T(";");
-	int CommandProcs(const CString& s);
+	CPoint start_Pos;
+	CString obj_Str;
+	CRect view;
 
-
-
+	// 도형 관리
 	struct ObjData
 	{
 		int type;
@@ -92,13 +79,7 @@ public:
 	};
 	std::vector<ObjData> objData;
 
-	void drawShape(int type, CDC* pdc, const CFPoint& center, const CFPoint& size);
-	void drawRectangle(CDC* pDC, const CFPoint& center, const CFPoint& size);
-	void drawEllipse(CDC* pDC, const CFPoint& center, const CFPoint& sizes);
-	void onDrawImage();
-	void getSerialPort();
-	long GetBaudRate(int index);
-
+	// 이벤트 핸들러
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBtnClickedAddR();
@@ -113,7 +94,37 @@ public:
 	afx_msg void OnBnClickedSend();
 	void OnReadComPort();
 
+
+	// Serial 통신
+	Comm g_Comm;
+	void getSerialPort();
+	long GetBaudRate(int index);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
-	void Response(int s_f);
+
+	// 유틸리티
+	void drawShape(int type, CDC* pdc, const CFPoint& center, const CFPoint& size);
+	void drawRectangle(CDC* pDC, const CFPoint& center, const CFPoint& size);
+	void drawEllipse(CDC* pDC, const CFPoint& center, const CFPoint& sizes);
+	void onDrawImage();
+	CFPoint Scale(const CFPoint& point);
+	CFPoint ReScale(const CFPoint& point);
+	std::vector<CString> split(const CString& s);
+	CString delimiter = _T(";");
+	Command StringToCommand(const CString& commandStr);
+	int CommandProcs(const CString& s);
+
+	
+	std::map<CString, Command> commandMap;
+
+	// Initializes the command map
+	void InitializeCommandMap() {
+		commandMap[_T("ADD")] = ADD;
+		commandMap[_T("DEL")] = DEL;
+		commandMap[_T("GETCOUNT")] = GETCOUNT;
+		commandMap[_T("GETOBJ")] = GETOBJ;
+		commandMap[_T("INVALID")] = INVALID;
+	}
+
+	int Response(int s_f);
 };

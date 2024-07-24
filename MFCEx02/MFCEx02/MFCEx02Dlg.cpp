@@ -183,7 +183,7 @@ HCURSOR CMFCEx02Dlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+// 이벤트 핸들러
 void CMFCEx02Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CDialogEx::OnLButtonDown(nFlags, point);
@@ -321,32 +321,93 @@ void CMFCEx02Dlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-// 스케일링 함수
-CFPoint CMFCEx02Dlg::Scale(const CFPoint& point)
+void CMFCEx02Dlg::OnCbnDropdownComport()
 {
-	// 스케일링 연산
-	CFPoint scaledPoint(
-		point.x * 100.0f / view.Width(),
-		point.y * (-100.0f) / view.Height()
-		);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
+	getSerialPort();
 
-	// 소수점 세 자리로 반올림
-	return scaledPoint.RoundToThreeDecimalPlaces(scaledPoint);
 }
 
-// 리스케일링 함수
-CFPoint CMFCEx02Dlg::ReScale(const CFPoint& point)
+void CMFCEx02Dlg::OnCbnDropdownBaudRate()
 {
-	// 리스케일링 연산
-	CFPoint rescaledPoint(
-		point.x / 100.0f * view.Width(),
-		point.y / (-100.0f) * view.Height()
-		);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
+	// 보드레이트 선택 이벤트 처리
+	int sel = m_BaudRate.GetCurSel();
+	CString strBaudRate;
+	m_BaudRate.GetLBText(sel, strBaudRate);
+	int baudRate = _ttoi(strBaudRate);
 
-	// 소수점 세 자리로 반올림
-	return rescaledPoint.RoundToThreeDecimalPlaces(rescaledPoint);
 }
 
+void CMFCEx02Dlg::OnBnClickedConnect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
+	int selComport = m_Comport.GetCurSel();
+	if (selComport == CB_ERR) {
+		AfxMessageBox(_T("No COM Port Selected"));
+		return;
+	}
+
+	// ComboBox에서 선택한 항목이 0부터 시작하므로 1을 더해 실제 포트 번호로 사용합니다.
+	short port = selComport + 1;
+
+	int selBaudRate = m_BaudRate.GetCurSel();
+	if (selBaudRate == CB_ERR) {
+		AfxMessageBox(_T("No Baud Rate Selected"));
+		return;
+	}
+
+	long baudRate = GetBaudRate(selBaudRate);
+	int mode = BIT_8 | STOP_1 | P_NONE;
+	char irq = 'E'; // 이벤트 기반 인터럽트
+	BOOL bEvent = TRUE; // 이벤트 사용
+
+	if (g_Comm.COpen(this->m_hWnd, port, baudRate, mode, irq, bEvent)) {
+		AfxMessageBox(_T("Connected successfully"));
+	}
+	else {
+		AfxMessageBox(_T("Failed to open COM port"));
+	}
+}
+
+void CMFCEx02Dlg::OnBnClickedUnconnect()
+{
+
+	g_Comm.CClose();
+}
+
+void CMFCEx02Dlg::OnBnClickedSend()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CString str_Send;
+	GetDlgItem(IDC_EDIT5)->GetWindowTextW(str_Send); // 컨트롤에서 텍스트 가져오기
+
+	g_Comm.CWrite(str_Send);
+}
+
+void CMFCEx02Dlg::OnReadComPort(){
+	CString str_Receive;
+	if (g_Comm.CRead(str_Receive)) {
+		m_Receive.SetWindowTextW(str_Receive);
+		CommandProcs(str_Receive);
+	}
+
+	/*	std::vector<CString> tokens = split(str_Receive, _T(";"));
+
+	if (!tokens.empty() && tokens[0] == _T("S")) {
+	if (tokens.size() < 2) { // 커맨드가 존재하는지 확인
+	AfxMessageBox(_T("Invalid command format: missing command"));
+	return;
+	}
+	CString cmdStr = tokens[1]; // 두 번째 토큰을 커맨드로 설정
+
+	//		Command cmd = stringToCommand(cmdStr); // 커맨드를 enum으로 변환
+
+	}*/
+}
+
+
+//유틸리티 함수
 void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CFPoint& center, const CFPoint& size)
 {
 	// 타원을 360도로 나누어 점을 찍음
@@ -368,14 +429,13 @@ void CMFCEx02Dlg::drawEllipse(CDC* pDC, const CFPoint& center, const CFPoint& si
 	}
 }
 
-
 void CMFCEx02Dlg::drawRectangle(CDC* pDC, const CFPoint& center, const CFPoint& size)
 {
 	// 사각형의 각 좌표를 계산
-	int left = center.x - (int)(size.x / 2);
-	int top = center.y - (int)(size.y / 2);
-	int right = center.x + (int)(size.x / 2);
-	int bottom = center.y + (int)(size.y / 2);
+	int left = center.x - (size.x / 2);
+	int top = center.y - (size.y / 2);
+	int right = center.x + (size.x / 2);
+	int bottom = center.y + (size.y / 2);
 
 	// 사각형 그리기
 	pDC->MoveTo(left, top);
@@ -404,7 +464,6 @@ void CMFCEx02Dlg::drawShape(int type, CDC* pDC, const CFPoint& center, const CFP
 		break;
 	}
 }
-
 
 void CMFCEx02Dlg::onDrawImage()
 {
@@ -499,6 +558,8 @@ void CMFCEx02Dlg::onDrawImage()
 	pStatic->ReleaseDC(pDC);
 }
 
+
+// Serial 통신
 void CMFCEx02Dlg::getSerialPort(){
 	HKEY hKey;
 	RegOpenKey(HKEY_LOCAL_MACHINE, TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM"), &hKey);
@@ -522,26 +583,6 @@ void CMFCEx02Dlg::getSerialPort(){
 	RegCloseKey(hKey);
 }
 
-void CMFCEx02Dlg::OnCbnDropdownComport()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
-	getSerialPort();
-
-}
-
-
-void CMFCEx02Dlg::OnCbnDropdownBaudRate()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
-	// 보드레이트 선택 이벤트 처리
-	int sel = m_BaudRate.GetCurSel();
-	CString strBaudRate;
-	m_BaudRate.GetLBText(sel, strBaudRate);
-	int baudRate = _ttoi(strBaudRate);
-
-}
-
-// 콤보박스 선택 인덱스를 통해 BAUD rate 값을 매핑하는 함수
 long CMFCEx02Dlg::GetBaudRate(int index)
 {
 	switch (index)
@@ -570,53 +611,6 @@ long CMFCEx02Dlg::GetBaudRate(int index)
 	}
 }
 
-// 콤보박스 선택 인덱스를 기반으로 COpen 함수 호출
-void CMFCEx02Dlg::OnBnClickedConnect()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가
-	int selComport = m_Comport.GetCurSel();
-	if (selComport == CB_ERR) {
-		AfxMessageBox(_T("No COM Port Selected"));
-		return;
-	}
-
-	// ComboBox에서 선택한 항목이 0부터 시작하므로 1을 더해 실제 포트 번호로 사용합니다.
-	short port = selComport + 1;
-
-	int selBaudRate = m_BaudRate.GetCurSel();
-	if (selBaudRate == CB_ERR) {
-		AfxMessageBox(_T("No Baud Rate Selected"));
-		return;
-	}
-
-	long baudRate = GetBaudRate(selBaudRate);
-	int mode = BIT_8 | STOP_1 | P_NONE;
-	char irq = 'E'; // 이벤트 기반 인터럽트
-	BOOL bEvent = TRUE; // 이벤트 사용
-
-	if (g_Comm.COpen(this->m_hWnd, port, baudRate, mode, irq, bEvent)) {
-        AfxMessageBox(_T("Connected successfully"));
-    } else {
-        AfxMessageBox(_T("Failed to open COM port"));
-    }
-}
-
-void CMFCEx02Dlg::OnBnClickedUnconnect()
-{
-
-	g_Comm.CClose();
-}
-
-
-void CMFCEx02Dlg::OnBnClickedSend()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString str_Send;
-	GetDlgItem(IDC_EDIT5)->GetWindowTextW(str_Send); // 컨트롤에서 텍스트 가져오기
-	
-	g_Comm.CWrite(str_Send);
-}
-
 void CMFCEx02Dlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (nIDEvent == TIMER_ID&&g_Comm.CommCheck())
@@ -633,53 +627,31 @@ void CMFCEx02Dlg::OnDestroy()
 	CDialogEx::OnDestroy();
 }
 
-/*std::vector<CString> split(const CString& s, const CString& delimiter) {
-	std::vector<CString> tokens;
-	int start = 0;
-	CString token = s.Tokenize(delimiter, start);
 
-	while (token != _T("")) {
-		tokens.push_back(token);
-		token = s.Tokenize(delimiter, start);
-	}
-	return tokens;
-}
-*/
-
-
-void CMFCEx02Dlg::OnReadComPort(){
-	CString str_Receive;
-	if (g_Comm.CRead(str_Receive)) {
-		m_Receive.SetWindowTextW(str_Receive);
-	}
-
-/*	std::vector<CString> tokens = split(str_Receive, _T(";"));
-
-	if (!tokens.empty() && tokens[0] == _T("S")) {
-		if (tokens.size() < 2) { // 커맨드가 존재하는지 확인
-			AfxMessageBox(_T("Invalid command format: missing command"));
-			return;
-		}
-		CString cmdStr = tokens[1]; // 두 번째 토큰을 커맨드로 설정
-
-//		Command cmd = stringToCommand(cmdStr); // 커맨드를 enum으로 변환
-
-	}*/
-}
-/*
-afx_msg LRESULT CMFCEx02Dlg::OnReadComport(WPARAM wParam, LPARAM lParam)
+// 유틸리티
+CFPoint CMFCEx02Dlg::Scale(const CFPoint& point)
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString str_Receive;
-	if (g_Comm.CRead(str_Receive)) {
-		m_Receive.SetWindowTextW(str_Receive);
-	}
-	else {
-		AfxMessageBox(_T("Failed to read from comm port"));
-	}
-	return 0;
+	// 스케일링 연산
+	CFPoint scaledPoint(
+		point.x * 100.0f / view.Width(),
+		point.y * (-100.0f) / view.Height()
+		);
+
+	// 소수점 세 자리로 반올림
+	return scaledPoint.RoundToThreeDecimalPlaces(scaledPoint);
 }
-*/
+
+CFPoint CMFCEx02Dlg::ReScale(const CFPoint& point)
+{
+	// 리스케일링 연산
+	CFPoint rescaledPoint(
+		point.x / 100.0f * view.Width(),
+		point.y / (-100.0f) * view.Height()
+		);
+
+	// 소수점 세 자리로 반올림
+	return rescaledPoint.RoundToThreeDecimalPlaces(rescaledPoint);
+}
 
 std::vector<CString> CMFCEx02Dlg::split(const CString& s) {
 	std::vector<CString> tokens;
@@ -699,14 +671,16 @@ std::vector<CString> CMFCEx02Dlg::split(const CString& s) {
 	return tokens;
 }
 
-// 문자열을 Command enum으로 변환하는 함수
-CMFCEx02Dlg::Command CMFCEx02Dlg::StringToCommand(const CString& commandStr) {
+
+Command CMFCEx02Dlg::StringToCommand(const CString& commandStr) {
+	// Find the command in the map
 	auto it = commandMap.find(commandStr);
 	if (it != commandMap.end()) {
 		return it->second;
 	}
 	return INVALID;
 }
+
 
 int CMFCEx02Dlg::CommandProcs(const CString& s)
 {
@@ -717,7 +691,7 @@ int CMFCEx02Dlg::CommandProcs(const CString& s)
 		// 커맨드가 존재하는지 확인
 		if (tokens.size() < 2) {
 			AfxMessageBox(_T("Invalid command format: missing command"));
-			return 0;
+			return Response(0);
 		}
 
 		// 두 번째 토큰을 커맨드로 설정
@@ -728,21 +702,41 @@ int CMFCEx02Dlg::CommandProcs(const CString& s)
 		// 커맨드에 따라 처리
 		switch (cmd) {
 		case ADD:
-			return 1;
-
+			if (tokens[2] == _T("Rect")){
+				count_R++;  // 사각형 개수 증가
+				obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
+				objData.emplace_back(1, CFPoint(tokens[3], tokens[4]), CFPoint(tokens[5], tokens[6]), false);  // 객체 데이터 저장
+				m_List.InsertItem(m_List.GetItemCount(), obj_Str);  // 리스트에 객체 추가
+				break;
+			}
+			else if (tokens[2] == _T("Arc")){
+				count_R++;  // 사각형 개수 증가
+				obj_Str.Format(_T("Arc %d"), count_R);  // 호 이름 설정
+				objData.emplace_back(2, CFPoint(tokens[3], tokens[4]), CFPoint(tokens[5], tokens[6]), false);  // 객체 데이터 저장
+				m_List.InsertItem(m_List.GetItemCount(), obj_Str);  // 리스트에 객체 추가
+				break;
+			}
+			else {
+				return Response(0);
+			}
+		default:
+			return Response(0);
 		}
+
+		onDrawImage();
+		return Response(1);
 	}
 	else {
-		AfxMessageBox(_T("Invalid message format: missing S"));
-		Response(0);
+		return Response(0);
 	}
 }
 
 
-void CMFCEx02Dlg::Response(int s_f)
+int CMFCEx02Dlg::Response(int s_f)
 {
 	CString str_Response = _T("Fail");
 	if (s_f == 1)	str_Response = _T("Success");
 	m_Send.SetWindowTextW(str_Response);
 	g_Comm.CWrite(str_Response);
+	return s_f;
 }
