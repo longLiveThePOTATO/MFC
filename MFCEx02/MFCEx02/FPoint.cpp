@@ -15,8 +15,8 @@ CFPoint::CFPoint(const CPoint& point) : x(static_cast<float>(point.x)), y(static
 // CString 쌍을 CFPoint로 변환하는 생성자
 CFPoint::CFPoint(const CString& xStr, const CString& yStr) {
 	// CString을 float으로 변환
-	x = static_cast<float>(std::atof(CT2CA(xStr)));
-	y = static_cast<float>(std::atof(CT2CA(yStr)));
+	x = _ttof(xStr); // CString을 double로 변환
+	y = _ttof(yStr); // CString을 double로 변환
 }
 
 // 소수점 세 자리로 반올림하는 함수

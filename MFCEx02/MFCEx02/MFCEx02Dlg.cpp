@@ -672,26 +672,35 @@ std::vector<CString> CMFCEx02Dlg::split(const CString& s) {
 }
 
 
-Command CMFCEx02Dlg::StringToCommand(const CString& commandStr) {
-	// Find the command in the map
-	auto it = commandMap.find(commandStr);
-	if (it != commandMap.end()) {
-		return it->second;
+Command CMFCEx02Dlg::StringToCommand(CString commandStr) {
+	if (commandStr.CompareNoCase(_T("Add")) == 0) {
+		return ADD;
 	}
-	return INVALID;
+	else if (commandStr.CompareNoCase(_T("Delete")) == 0) {
+		return DEL;
+	}
+	else if (commandStr.CompareNoCase(_T("GetCount")) == 0) {
+		return GETCOUNT;
+	}
+	else if (commandStr.CompareNoCase(_T("GetObj")) == 0) {
+		return GETOBJ;
+	}
+	else {
+		return INVALID;
+	}
 }
-
 
 int CMFCEx02Dlg::CommandProcs(const CString& s)
 {
 	std::vector<CString> tokens = split(s);
+	int s_f = 0;
+	CString str_Response = _T("");
 
-	// 첫 번째 토큰이 "S"인지 확인
-	if (!tokens.empty() && tokens[0] == _T("S")) {
+	// 첫 번째 토큰이 "S"이고 마지막 토큰이 "E"인지 확인
+	if (!tokens.empty() && tokens[0] == _T("S") && tokens.back() == _T("E")) {
 		// 커맨드가 존재하는지 확인
-		if (tokens.size() < 2) {
-			AfxMessageBox(_T("Invalid command format: missing command"));
-			return Response(0);
+		if (tokens.size() < 3) {
+			return Response(s_f, str_Response); // Invalid format
 		}
 
 		// 두 번째 토큰을 커맨드로 설정
@@ -702,41 +711,151 @@ int CMFCEx02Dlg::CommandProcs(const CString& s)
 		// 커맨드에 따라 처리
 		switch (cmd) {
 		case ADD:
-			if (tokens[2] == _T("Rect")){
+			if (tokens.size() != 8) {
+				return Response(s_f, str_Response); // Incorrect number of tokens
+			}
+			if (tokens[2] == _T("Rect")) {
+				// 형식 검증
+				if (!IsValidFloat(tokens[3]) || !IsValidFloat(tokens[4]) ||
+					!IsValidFloat(tokens[5]) || !IsValidFloat(tokens[6])) {
+					return Response(s_f, str_Response); // Incorrect float values
+				}
 				count_R++;  // 사각형 개수 증가
 				obj_Str.Format(_T("Rect %d"), count_R);  // 사각형 이름 설정
 				objData.emplace_back(1, CFPoint(tokens[3], tokens[4]), CFPoint(tokens[5], tokens[6]), false);  // 객체 데이터 저장
 				m_List.InsertItem(m_List.GetItemCount(), obj_Str);  // 리스트에 객체 추가
+				s_f++;
 				break;
 			}
-			else if (tokens[2] == _T("Arc")){
+			else if (tokens[2] == _T("Arc")) {
+				// 형식 검증
+				if (!IsValidFloat(tokens[3]) || !IsValidFloat(tokens[4]) ||
+					!IsValidFloat(tokens[5]) || !IsValidFloat(tokens[6])) {
+					return Response(s_f, str_Response); // Incorrect float values
+				}
 				count_R++;  // 사각형 개수 증가
 				obj_Str.Format(_T("Arc %d"), count_R);  // 호 이름 설정
 				objData.emplace_back(2, CFPoint(tokens[3], tokens[4]), CFPoint(tokens[5], tokens[6]), false);  // 객체 데이터 저장
 				m_List.InsertItem(m_List.GetItemCount(), obj_Str);  // 리스트에 객체 추가
+				s_f++;
 				break;
 			}
 			else {
-				return Response(0);
+				return Response(s_f, str_Response); // Unknown shape type
 			}
+
+		case DEL:
+			if (tokens.size() != 3) {
+				return Response(s_f, str_Response); // Incorrect number of tokens
+			}
+			{
+				int index = _ttoi(tokens[2]);
+				if (index < 0 || index >= m_List.GetItemCount()) {
+					return Response(s_f, str_Response); // Index out of range
+				}
+				// 리스트의 항목을 선택
+				m_List.SetItemState(index, LVIS_SELECTED, LVIS_SELECTED);
+				// 선택된 항목을 삭제
+				OnBnClickedDel();
+			}
+			s_f++;
+			break;
+
+		case GETCOUNT:
+			if (tokens.size() != 2) {
+				return Response(s_f, str_Response); // Incorrect number of tokens
+			}
+			{
+				int count = objData.size();
+				str_Response.Format(_T("%d"), count);
+				s_f = 3;
+			}
+			break;
+
+		case GETOBJ:
+			if (tokens.size() != 3) {
+				return Response(s_f, str_Response); // Incorrect number of tokens
+			}
+			{
+				int index = _ttoi(tokens[2]);
+				if (index < 0 || index >= m_List.GetItemCount()) {
+					return Response(s_f, str_Response); // Index out of range
+				}
+				// 리스트 컨트롤의 상태가 변경되었음을 알리기 위해 OnLvnItemchangedList 호출을 유도
+				NM_LISTVIEW nmListView;
+				memset(&nmListView, 0, sizeof(nmListView));  // 초기화
+				nmListView.hdr.hwndFrom = m_List.m_hWnd;
+				nmListView.hdr.idFrom = IDC_LIST;
+				nmListView.hdr.code = LVN_ITEMCHANGED;
+				nmListView.iItem = index;
+				nmListView.iSubItem = 0;
+				nmListView.uNewState = LVIS_SELECTED;
+				nmListView.uOldState = 0;
+				nmListView.uChanged = LVIF_STATE;
+				nmListView.ptAction.x = 0;
+				nmListView.ptAction.y = 0;
+				nmListView.lParam = 0;
+
+				// 리스트 컨트롤의 부모 윈도우로 메시지를 보내어 이벤트 핸들러 호출 유도
+				m_List.SendMessage(WM_NOTIFY, IDC_LIST, (LPARAM)&nmListView);
+
+				CString centerXStr;
+				CString centerYStr;
+				CString sizeXStr;
+				CString sizeYStr;
+
+				// CEdit 컨트롤에서 문자열 가져오기
+				center_X.GetWindowText(centerXStr);
+				center_Y.GetWindowText(centerYStr);
+				size_X.GetWindowText(sizeXStr);
+				size_Y.GetWindowText(sizeYStr);
+				str_Response.Format(_T("%s; %s; %s; %s"), centerXStr, centerYStr, sizeXStr, sizeYStr);
+				s_f++;
+			}
+			break;
+
 		default:
-			return Response(0);
+			return Response(s_f, str_Response); // Invalid command
 		}
 
 		onDrawImage();
-		return Response(1);
+		return Response(s_f, str_Response);
+
 	}
 	else {
-		return Response(0);
+		return Response(s_f, str_Response); // Invalid format
 	}
 }
 
-
-int CMFCEx02Dlg::Response(int s_f)
+int CMFCEx02Dlg::Response(int s_f, CString str_Response)
 {
-	CString str_Response = _T("Fail");
+	
+	switch (s_f){
+	case 0: 
+		str_Response = _T("Fail");
+		break;
+	case 1:
+		str_Response = _T("Success");
+		break;
+	default:
+		break;
+	}
 	if (s_f == 1)	str_Response = _T("Success");
 	m_Send.SetWindowTextW(str_Response);
 	g_Comm.CWrite(str_Response);
 	return s_f;
+}
+
+bool CMFCEx02Dlg::IsValidFloat(const CString& str)
+{
+	// CString을 C 스타일 문자열로 변환
+	CT2CA pszConvertedAnsiString(str);
+	std::string stdStr(pszConvertedAnsiString);
+
+	// std::string을 float로 변환
+	char* end;
+	std::strtof(stdStr.c_str(), &end);
+
+	// 변환 결과가 문자열의 끝까지 읽었는지 확인
+	return (*end == '\0');
 }

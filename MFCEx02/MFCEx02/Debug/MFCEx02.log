@@ -1,7 +1,7 @@
-﻿빌드 시작: 2024-07-24 오후 6:02:43
+﻿빌드 시작: 2024-07-25 오전 11:33:10
      1>2 노드의 "D:\MFC\MFCEx02\MFCEx02\MFCEx02.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ID:\MFC\MFCEx02\\Library /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx02.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx02.cpp MFCEx02Dlg.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ID:\MFC\MFCEx02\\Library /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFCEx02.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCEx02Dlg.cpp
          MFCEx02Dlg.cpp
      1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(259): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
      1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(420): warning C4244: '초기화 중' : 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
@@ -11,9 +11,6 @@
      1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(437): warning C4244: '초기화 중' : 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
      1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(438): warning C4244: '초기화 중' : 'const float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
      1>d:\mfc\mfcex02\mfcex02\mfcex02dlg.cpp(521): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
-         코드를 생성하고 있습니다...
-         건너뛰고 있습니다... (관련된 변경 내용 없음)
-         MFCEx02.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\MFC\MFCEx02\Debug\MFCEx02.exe" /INCREMENTAL /NOLOGO D:\MFC\MFCEx02\\Library\Pcomm.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\MFC\MFCEx02\Debug\MFCEx02.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\MFC\MFCEx02\Debug\MFCEx02.lib" /MACHINE:X86 Debug\MFCEx02.res
          Debug\Comm.obj
@@ -26,4 +23,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:00.48
+경과 시간: 00:00:00.60

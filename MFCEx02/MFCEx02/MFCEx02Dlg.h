@@ -111,10 +111,10 @@ public:
 	CFPoint ReScale(const CFPoint& point);
 	std::vector<CString> split(const CString& s);
 	CString delimiter = _T(";");
-	Command StringToCommand(const CString& commandStr);
+	Command StringToCommand(CString commandStr);
 	int CommandProcs(const CString& s);
 
-	
+	/*
 	std::map<CString, Command> commandMap;
 
 	// Initializes the command map
@@ -125,6 +125,8 @@ public:
 		commandMap[_T("GETOBJ")] = GETOBJ;
 		commandMap[_T("INVALID")] = INVALID;
 	}
-
-	int Response(int s_f);
+	*/
+	
+	bool IsValidFloat(const CString& str);
+	int Response(int s_f, CString str_Response);
 };
